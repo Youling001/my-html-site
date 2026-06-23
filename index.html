@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 东南亚品牌调研体验报告</title>
+  <style>
+    :root {
+      --ink: #172026;
+      --muted: #65717a;
+      --line: #d9e1e6;
+      --paper: #f7f4ee;
+      --panel: #ffffff;
+      --teal: #1a8a84;
+      --green: #57a773;
+      --blue: #427aa1;
+      --yellow: #e0a526;
+      --red: #c75b4a;
+      --violet: #7b6fbd;
+      --shadow: 0 18px 46px rgba(23, 32, 38, .12);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(26, 138, 132, .10), transparent 360px),
+        var(--paper);
+    }
+
+    button, input { font: inherit; }
+
+    .page-shell { min-height: 100vh; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity .72s cubic-bezier(.2, .8, .2, 1),
+        transform .72s cubic-bezier(.2, .8, .2, 1);
+      transition-delay: var(--delay, 0ms);
+      will-change: opacity, transform;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero .eyebrow,
+    .hero h1,
+    .hero-copy,
+    .hero-actions {
+      animation: heroRise .84s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .hero h1 { animation-delay: .08s; }
+    .hero-copy { animation-delay: .18s; }
+    .hero-actions { animation-delay: .28s; }
+
+    @keyframes heroRise {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px clamp(18px, 4vw, 54px);
+      background: rgba(247, 244, 238, .86);
+      border-bottom: 1px solid rgba(23, 32, 38, .08);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--ink);
+      border-radius: 8px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand strong { display: block; font-size: 14px; white-space: nowrap; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .nav a:hover { background: rgba(23, 32, 38, .06); color: var(--ink); }
+
+    main { padding-bottom: 80px; }
+
+    section {
+      padding: 54px clamp(18px, 5vw, 72px);
+    }
+
+    .hero {
+      min-height: 88vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      align-items: center;
+      gap: clamp(28px, 6vw, 76px);
+      padding-top: 52px;
+      padding-bottom: 42px;
+      border-bottom: 1px solid rgba(23, 32, 38, .08);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 750;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 6px rgba(26, 138, 132, .14);
+      animation: pulseBeat 1.8s ease-out infinite;
+    }
+
+    @keyframes pulseBeat {
+      0%, 100% { box-shadow: 0 0 0 6px rgba(26, 138, 132, .14); }
+      50% { box-shadow: 0 0 0 10px rgba(26, 138, 132, .05); }
+    }
+
+    h1 {
+      margin: 18px 0 18px;
+      max-width: 860px;
+      font-size: clamp(42px, 7vw, 88px);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      color: #3c484f;
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      color: var(--ink);
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 0 0 rgba(23, 32, 38, 0);
+      transition:
+        color .22s ease,
+        background-color .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease,
+        transform .22s ease;
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: var(--ink);
+      box-shadow: 0 12px 22px rgba(23, 32, 38, .18);
+    }
+
+    .btn:hover {
+      color: var(--ink);
+      background: rgba(26, 138, 132, .10);
+      border-color: var(--teal);
+      box-shadow: 0 12px 24px rgba(23, 32, 38, .12);
+      transform: translateY(-2px);
+    }
+
+    .btn.primary:hover {
+      color: #fff;
+      background: #203139;
+      border-color: #203139;
+      box-shadow: 0 18px 32px rgba(23, 32, 38, .24);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(23, 32, 38, .12);
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid rgba(26, 138, 132, .28);
+      outline-offset: 3px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+    }
+
+    .region-map {
+      width: min(100%, 520px);
+      aspect-ratio: 1 / 1;
+      position: relative;
+    }
+
+    .sea-card {
+      position: absolute;
+      inset: 7% 5%;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .58)),
+        radial-gradient(circle at 24% 34%, rgba(66, 122, 161, .28), transparent 22%),
+        radial-gradient(circle at 76% 68%, rgba(224, 165, 38, .25), transparent 26%);
+      border: 1px solid rgba(23, 32, 38, .10);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: cardFloatIn .9s cubic-bezier(.2, .8, .2, 1) .18s both;
+    }
+
+    @keyframes cardFloatIn {
+      from { opacity: 0; transform: translateY(24px) scale(.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .sea-card svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .country-pin {
+      position: absolute;
+      display: grid;
+      gap: 5px;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      animation: pinDrop .56s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .country-pin:nth-of-type(2) { animation-delay: .34s; }
+    .country-pin:nth-of-type(3) { animation-delay: .42s; }
+    .country-pin:nth-of-type(4) { animation-delay: .50s; }
+    .country-pin:nth-of-type(5) { animation-delay: .58s; }
+    .country-pin:nth-of-type(6) { animation-delay: .66s; }
+    .country-pin:nth-of-type(7) { animation-delay: .74s; }
+
+    @keyframes pinDrop {
+      from { opacity: 0; transform: translate(-50%, -62%) scale(.86); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .country-pin i {
+      width: 16px;
+      height: 16px;
+      margin: 0 auto;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 8px 18px rgba(23, 32, 38, .24);
+    }
+
+    .country-pin span {
+      display: block;
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .9);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 7px 16px rgba(23, 32, 38, .12);
+      white-space: nowrap;
+    }
+
+    .pin-th { left: 51%; top: 44%; }
+    .pin-vn { left: 64%; top: 40%; }
+    .pin-my { left: 45%; top: 63%; }
+    .pin-id { left: 60%; top: 74%; }
+    .pin-ph { left: 78%; top: 53%; }
+    .pin-in { left: 24%; top: 42%; }
+
+    .floating-metric {
+      position: absolute;
+      left: 0;
+      bottom: 9%;
+      width: 180px;
+      padding: 16px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid rgba(23, 32, 38, .10);
+      box-shadow: 0 14px 36px rgba(23, 32, 38, .14);
+      animation: metricPop .66s cubic-bezier(.2, .8, .2, 1) .86s both;
+    }
+
+    @keyframes metricPop {
+      from { opacity: 0; transform: translateY(18px) scale(.94); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .floating-metric b { display: block; font-size: 30px; line-height: 1; }
+    .floating-metric span { display: block; color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.4; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 24px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      max-width: 780px;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      max-width: 520px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .kpi, .panel, .country-detail, .action-card {
+      background: rgba(255, 255, 255, .82);
+      border: 1px solid rgba(23, 32, 38, .10);
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(23, 32, 38, .08);
+    }
+
+    .kpi { padding: 18px; min-height: 142px; }
+    .kpi small { display: block; color: var(--muted); font-weight: 700; }
+    .kpi strong { display: block; margin-top: 14px; font-size: clamp(28px, 4vw, 46px); letter-spacing: 0; }
+    .kpi > span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .insight {
+      min-height: 260px;
+      padding: 22px;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .insight:nth-child(2) { background: #214c55; }
+    .insight:nth-child(3) { background: #5d5132; }
+    .insight::after {
+      content: "";
+      position: absolute;
+      right: -22px;
+      bottom: -22px;
+      width: 120px;
+      height: 120px;
+      border: 18px solid rgba(255,255,255,.09);
+      border-radius: 50%;
+    }
+    .insight h3 { margin: 0; font-size: 22px; }
+    .insight p { margin: 16px 0 0; color: rgba(255,255,255,.78); line-height: 1.7; }
+    .insight .tag { color: #fff; border-color: rgba(255,255,255,.26); background: rgba(255,255,255,.10); }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .panel { padding: 20px; }
+    .panel h3 { margin: 0 0 16px; font-size: 18px; }
+
+    .bar-list { display: grid; gap: 12px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 94px minmax(0, 1fr) 56px;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      height: 13px;
+      border-radius: 999px;
+      background: rgba(23, 32, 38, .08);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: calc(var(--value) * 1%);
+      border-radius: inherit;
+      background: var(--color, var(--teal));
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 1s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .bar-list.is-visible .bar-fill,
+    .panel.is-visible .bar-fill {
+      transform: scaleX(1);
+    }
+
+    .bar-row b { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .sample {
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(23, 32, 38, .04);
+      border: 1px solid rgba(23, 32, 38, .07);
+    }
+
+    .sample strong { display: block; font-size: 24px; }
+    .sample span { color: var(--muted); font-size: 12px; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      min-height: 38px;
+      padding: 0 13px;
+      border: 1px solid rgba(23, 32, 38, .18);
+      border-radius: 8px;
+      background: rgba(255,255,255,.68);
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .tab[aria-selected="true"] {
+      color: #fff;
+      border-color: var(--ink);
+      background: var(--ink);
+    }
+
+    .country-layout {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr);
+      gap: 16px;
+    }
+
+    .country-detail { padding: 22px; }
+    .country-detail h3 { margin: 0; font-size: 30px; }
+    .country-detail p { color: var(--muted); line-height: 1.7; }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 9px;
+      border: 1px solid rgba(23, 32, 38, .12);
+      border-radius: 8px;
+      color: #3c484f;
+      background: rgba(255,255,255,.62);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .split-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .mini-metric {
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(23,32,38,.045);
+    }
+
+    .mini-metric small { color: var(--muted); display: block; }
+    .mini-metric strong { display: block; margin-top: 6px; font-size: 23px; }
+
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .journey-step {
+      padding: 14px;
+      border: 1px solid rgba(23,32,38,.10);
+      border-radius: 8px;
+      background: #fff;
+      min-height: 126px;
+    }
+
+    .journey-step small {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--teal);
+      font-weight: 800;
+    }
+
+    .journey-step b { display: block; margin-top: 12px; }
+    .journey-step span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .matrix {
+      display: grid;
+      gap: 8px;
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 116px repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .matrix-cell {
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(23,32,38,.05);
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .matrix-cell.head { color: var(--ink); background: transparent; box-shadow: none; }
+    .matrix-cell.hot { color: #fff; background: var(--red); }
+    .matrix-cell.warm { color: var(--ink); background: rgba(224,165,38,.48); }
+    .matrix-cell.cool { color: #fff; background: var(--teal); }
+
+    .matrix-cell.hot,
+    .matrix-cell.warm,
+    .matrix-cell.cool {
+      transition: transform .28s ease, box-shadow .28s ease;
+    }
+
+    .matrix-cell.hot:hover,
+    .matrix-cell.warm:hover,
+    .matrix-cell.cool:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(23,32,38,.12);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .action-card { padding: 20px; }
+    .action-card h3 { margin: 0; font-size: 20px; }
+    .action-card p { color: var(--muted); line-height: 1.65; }
+
+    .priority {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .priority::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .quote-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    blockquote {
+      margin: 0;
+      padding: 18px;
+      border-left: 4px solid var(--teal);
+      border-radius: 8px;
+      background: rgba(255,255,255,.78);
+      color: #3c484f;
+      line-height: 1.7;
+    }
+
+    blockquote cite {
+      display: block;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 750;
+    }
+
+    .footnote {
+      padding-top: 28px;
+      color: var(--muted);
+      border-top: 1px solid rgba(23,32,38,.10);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1100px) {
+      .hero, .dashboard, .country-layout { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+      .hero-visual { min-height: 420px; }
+      .kpi-grid, .insight-grid, .action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .journey { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 740px) {
+      .topbar { align-items: flex-start; flex-direction: column; gap: 10px; }
+      section { padding: 40px 16px; }
+      .hero { padding-top: 36px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .kpi-grid, .insight-grid, .action-grid, .quote-strip, .sample-grid, .split-metrics { grid-template-columns: 1fr; }
+      .matrix { overflow-x: auto; padding-bottom: 8px; }
+      .matrix-row { min-width: 760px; }
+      .bar-row { grid-template-columns: 82px minmax(0, 1fr) 48px; }
+      .floating-metric { left: 12px; bottom: 0; }
+      .country-pin span { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .001ms !important;
+      }
+
+      .reveal { opacity: 1; transform: none; }
+      .bar-fill { transform: scaleX(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">70</div>
+        <div>
+          <strong>东南亚品牌调研体验报告</strong>
+          <span>内部复盘版 · 问卷投放 2026.04.25-05.25</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#overview">概览</a>
+        <a href="#compare">国家对比</a>
+        <a href="#country">国家画像</a>
+        <a href="#pain">痛点矩阵</a>
+        <a href="#actions">体验机会</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <div>
+          <span class="eyebrow"><i class="pulse"></i> Experience review dashboard</span>
+          <h1>安全刚需明确，体验短板集中在连接、远程与高温可靠性。</h1>
+          <p class="hero-copy">
+            这份网页把六国问卷从“品牌报告”重组为体验复盘：先看市场共同结构，再定位每个国家的差异化机会，最后沉淀为产品、交互、用研和服务侧可推进的行动清单。
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#overview">查看关键结论</a>
+            <a class="btn" href="#actions">跳到行动建议</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="东南亚重点国家示意">
+          <div class="region-map">
+            <div class="sea-card">
+              <svg viewBox="0 0 520 520" role="img" aria-label="调研国家分布与品牌体验概览">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="#1a8a84" stop-opacity=".72"/>
+                    <stop offset="1" stop-color="#427aa1" stop-opacity=".72"/>
+                  </linearGradient>
+                </defs>
+                <path d="M58 238 C118 152 162 116 234 94 C302 72 386 91 443 144" fill="none" stroke="url(#g1)" stroke-width="20" stroke-linecap="round" opacity=".22"/>
+                <path d="M86 344 C162 291 230 279 314 303 C378 321 415 356 462 411" fill="none" stroke="#e0a526" stroke-width="24" stroke-linecap="round" opacity=".22"/>
+                <path d="M112 206 L177 168 L247 185 L294 240 L263 301 L185 311 L126 276 Z" fill="#ffffff" opacity=".58"/>
+                <path d="M312 142 L378 170 L403 231 L375 291 L314 276 L285 211 Z" fill="#ffffff" opacity=".58"/>
+                <path d="M264 343 L350 319 L434 356 L455 420 L392 454 L304 421 Z" fill="#ffffff" opacity=".58"/>
+                <g fill="none" stroke="#172026" stroke-opacity=".08" stroke-width="1">
+                  <path d="M60 80 H460"/>
+                  <path d="M60 180 H460"/>
+                  <path d="M60 280 H460"/>
+                  <path d="M60 380 H460"/>
+                  <path d="M120 60 V460"/>
+                  <path d="M220 60 V460"/>
+                  <path d="M320 60 V460"/>
+                  <path d="M420 60 V460"/>
+                </g>
+              </svg>
+            </div>
+            <div class="country-pin pin-in"><i></i><span>印度 NPS 37</span></div>
+            <div class="country-pin pin-th"><i></i><span>泰国 NPS 55</span></div>
+            <div class="country-pin pin-vn"><i></i><span>越南 NPS 48</span></div>
+            <div class="country-pin pin-my"><i></i><span>马来西亚 NPS 54</span></div>
+            <div class="country-pin pin-id"><i></i><span>印尼 NPS 42</span></div>
+            <div class="country-pin pin-ph"><i></i><span>菲律宾 NPS 51</span></div>
+            <div class="floating-metric">
+              <b data-count="1507">1,507</b>
+              <span>六国完卷样本，来自 70mai APP banner 投放</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="overview">
+        <div class="section-head">
+          <h2>一屏读懂：品牌口碑强，但体验问题高度集中。</h2>
+          <p>六国核心用户画像趋同，购买动机稳定指向安全防护。复盘重点不应只看传播和定位，更要把“连接失败、远程不稳、高温关机”作为跨国家体验债务处理。</p>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <small>完卷样本</small>
+            <strong data-count="1507">1,507</strong>
+            <span>越南和印度贡献最大样本量，可作为后续深访优先池。</span>
+          </div>
+          <div class="kpi">
+            <small>安全防护购买动机</small>
+            <strong data-count="75" data-suffix="%+">75%+</strong>
+            <span>六国均为首要动机，多国超过 90%。</span>
+          </div>
+          <div class="kpi">
+            <small>NPS 区间</small>
+            <strong><span data-count="37">37</span>-<span data-count="55">55</span></strong>
+            <span>整体良好到优秀，印度是提升空间最大的国家。</span>
+          </div>
+          <div class="kpi">
+            <small>共性体验痛点</small>
+            <strong data-count="3">3</strong>
+            <span>APP 连接、4G/GPS 稳定、高温发热/关机。</span>
+          </div>
+        </div>
+
+        <div class="insight-grid">
+          <article class="insight">
+            <span class="tag">用户画像</span>
+            <h3>30-50 岁男性车主是核心基本盘</h3>
+            <p>多数国家以 SUV 车主为主，马来西亚轿车占比更突出。安全取证需求强，说明产品体验必须围绕“关键时刻可信赖”来叙事和验证。</p>
+          </article>
+          <article class="insight">
+            <span class="tag">购买旅程</span>
+            <h3>线上种草到电商成交已经定型</h3>
+            <p>社媒、YouTube、TikTok、KOL 测评、用户评价共同构成决策链路。体验内容需要从参数展示转向真实场景证明。</p>
+          </article>
+          <article class="insight">
+            <span class="tag">品牌关系</span>
+            <h3>科技与性价比认知清晰，独立性仍需补课</h3>
+            <p>70mai 在多国拥有科技和性价比双重心智，但泰国、印尼、越南、印度仍存在小米强联想，影响独立品牌资产沉淀。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="compare">
+        <div class="section-head">
+          <h2>国家对比：忠诚度不错，满意度还没有追上口碑。</h2>
+          <p>NPS 高于满意度观感，意味着用户愿意推荐品牌，但产品日常体验仍有摩擦。体验设计应优先缩短“连接-查看-取证”的时间成本。</p>
+        </div>
+
+        <div class="dashboard">
+          <div class="panel">
+            <h3>NPS 对比</h3>
+            <div class="bar-list" id="npsBars"></div>
+          </div>
+          <div class="panel">
+            <h3>样本结构</h3>
+            <div class="sample-grid" id="sampleGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="country">
+        <div class="section-head">
+          <h2>国家画像：同一套底层需求，不同市场需要不同打法。</h2>
+          <p>点击国家查看核心用户、竞品、触达渠道和体验机会。这里保留了体验复盘最需要的粒度，适合会议中快速横向切换。</p>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="选择国家" id="countryTabs"></div>
+        <div class="country-layout">
+          <article class="country-detail" id="countryDetail"></article>
+          <div class="panel">
+            <h3>典型购买路径</h3>
+            <div class="journey">
+              <div class="journey-step"><small>1</small><b>内容种草</b><span id="journeyAwareness"></span></div>
+              <div class="journey-step"><small>2</small><b>主动搜索</b><span>搜索产品信息、参数、安装和售后内容。</span></div>
+              <div class="journey-step"><small>3</small><b>横向验证</b><span id="journeyCompare"></span></div>
+              <div class="journey-step"><small>4</small><b>电商成交</b><span>在价格、套装、评价和官方可信度之间做最终权衡。</span></div>
+            </div>
+            <div style="margin-top:20px">
+              <h3>选择因素 Top 3</h3>
+              <div class="bar-list" id="factorBars"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pain">
+        <div class="section-head">
+          <h2>痛点矩阵：跨国共性问题应进入产品体验主线。</h2>
+          <p>颜色越深表示越应优先处理。APP 连接、远程/GPS、高温可靠性不是单点投诉，而是横跨多国的体验风险。</p>
+        </div>
+
+        <div class="panel matrix" aria-label="痛点与国家矩阵">
+          <div class="matrix-row">
+            <div class="matrix-cell head">痛点</div>
+            <div class="matrix-cell head">马来西亚</div>
+            <div class="matrix-cell head">泰国</div>
+            <div class="matrix-cell head">印尼</div>
+            <div class="matrix-cell head">越南</div>
+            <div class="matrix-cell head">印度</div>
+            <div class="matrix-cell head">菲律宾</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell head">APP / Wi-Fi 连接</div>
+            <div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell head">4G / GPS / 远程查看</div>
+            <div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell head">高温 / 发热 / 关机</div>
+            <div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell head">本地化语言 / ADAS</div>
+            <div class="matrix-cell">低</div><div class="matrix-cell warm">中</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div><div class="matrix-cell warm">中</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell head">线下门店 / 售后</div>
+            <div class="matrix-cell warm">中</div><div class="matrix-cell">低</div><div class="matrix-cell hot">高</div><div class="matrix-cell">低</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell head">套装 / 配件 / 价格</div>
+            <div class="matrix-cell warm">中</div><div class="matrix-cell warm">中</div><div class="matrix-cell warm">中</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="actions">
+        <div class="section-head">
+          <h2>体验机会：把品牌优势翻译成可被验证的体验承诺。</h2>
+          <p>以下建议按体验设计师可推动的范围拆解：产品交互、用研验证、内容触点、服务闭环。目标是让“安全可信赖”从口号变成可感知的使用体验。</p>
+        </div>
+
+        <div class="action-grid">
+          <article class="action-card">
+            <span class="priority">P0 / Product UX</span>
+            <h3>重做连接与取证关键路径</h3>
+            <p>围绕“连接设备、查看录像、下载证据、远程看车”建立任务漏斗。优先降低 Wi-Fi 切换、Android Auto/车机冲突、离线查看和下载卡顿造成的中断。</p>
+          </article>
+          <article class="action-card">
+            <span class="priority">P0 / Reliability</span>
+            <h3>建立高温与网络稳定性的体验验收标准</h3>
+            <p>把热关机、4G 掉线、GPS 漂移、远程看车失败转化为可复现测试场景，并在营销内容中呈现“热带/高温/弱网”真实验证。</p>
+          </article>
+          <article class="action-card">
+            <span class="priority">P1 / Localization</span>
+            <h3>做本地化语音与 ADAS 提示专项</h3>
+            <p>越南语、马来语等语音提示要从翻译升级为场景化可懂。印尼摩托车密集路况下，ADAS 应支持更细颗粒度的静音、频率和误报控制。</p>
+          </article>
+          <article class="action-card">
+            <span class="priority">P1 / Growth</span>
+            <h3>把 KOL 测评内容改成体验证明</h3>
+            <p>YouTube、TikTok、Facebook/Instagram 是关键入口。内容重点从参数罗列转向夜视、停车监控、远程查看、高温稳定、事故取证等任务表现。</p>
+          </article>
+          <article class="action-card">
+            <span class="priority">P1 / Service</span>
+            <h3>补齐线下安装、售后与正品验证</h3>
+            <p>马来西亚、印尼、印度、菲律宾均出现线下支持诉求。可设计门店/安装点查询、保修状态、配件购买、正品验证的一体化服务入口。</p>
+          </article>
+          <article class="action-card">
+            <span class="priority">P2 / Portfolio</span>
+            <h3>按国家拆产品线机会</h3>
+            <p>马来西亚关注摩托车记录仪；越南和菲律宾期待 360°、车机互联和夜视；印度需要更强散热、电池安全和价格友好套装。</p>
+          </article>
+        </div>
+
+        <div class="quote-strip">
+          <blockquote>
+            “优化 APP，让它不管是通过 Wi-Fi 还是 4G 连接记录仪都能更快一些。”
+            <cite>越南用户 · APP 连接与行驶轨迹同步</cite>
+          </blockquote>
+          <blockquote>
+            “4G 和 GPS 信号应该更强一些，经常丢失 GPS 信号，实时画面也很难连接。”
+            <cite>印尼用户 · 远程监控稳定性</cite>
+          </blockquote>
+          <blockquote>
+            “别在行车记录仪里用电池了，改成超级电容吧。机器发热太严重。”
+            <cite>印度用户 · 高温与电池安全</cite>
+          </blockquote>
+        </div>
+      </section>
+
+      <section>
+        <div class="footnote">
+          数据来源：公司《2026东南亚品牌调研问卷报告》Markdown 文件。样本国家包括马来西亚、泰国、越南、印度、印度尼西亚、菲律宾；投放位置为 70mai APP banner；问卷语言覆盖英语、泰语、越南语、马来语、菲律宾语、印尼语。页面中的飞书图片未直接引用，以避免权限和时效问题。
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const countries = [
+      {
+        id: "my",
+        name: "马来西亚",
+        sample: 187,
+        returned: 248,
+        nps: 54.17,
+        satisfaction: 4.13,
+        safety: 91.13,
+        user: "中年男性轿车车主为主，安全防护动机高度集中。",
+        competitor: "DDPAI 66.99%",
+        channel: "电商平台 29.59%，Facebook/Instagram 18.88%，TikTok 18.37%。",
+        compare: "在线搜索 66.33%，博主测评 57.14%，品牌对比 49.49%。",
+        position: "科技创新、中档为主，近四成用户认为高端。",
+        factors: [["画质", 69.35], ["性价比", 46.77], ["功能", 45.16]],
+        opportunities: ["APP 连接", "4G/GPS 稳定", "耐高温", "以旧换新", "摩托车记录仪"]
+      },
+      {
+        id: "th",
+        name: "泰国",
+        sample: 116,
+        returned: 180,
+        nps: 55,
+        satisfaction: 4.04,
+        safety: 76.67,
+        user: "30-50 岁男性 SUV 车主，重视性价比和品牌声誉。",
+        competitor: "DDPAI 19.13%，Aston 14.78%，海康 12.17%",
+        channel: "Facebook/Instagram 20.97%，电商 19.35%，TikTok 16.94%。",
+        compare: "博主测评 59.68%，在线搜索 51.61%，品牌对比 38.71%。",
+        position: "科技和性价比双重认知，中端市场为主，仍有小米联想。",
+        factors: [["性价比", 61.11], ["画质", 52.22], ["品牌声誉", 31.67]],
+        opportunities: ["APP 登录/连接", "高温发热", "4G 远程", "疲劳驾驶提醒"]
+      },
+      {
+        id: "id",
+        name: "印度尼西亚",
+        sample: 162,
+        returned: 203,
+        nps: 42,
+        satisfaction: 4.06,
+        safety: 91.63,
+        user: "35-44 岁男性 SUV 车主，基础体验和功能丰富度都重要。",
+        competitor: "DDPAI 最直接，其次 Acroder 16.57%",
+        channel: "YouTube 25.9%，电商 21.69%，Facebook/Instagram 13.25%。",
+        compare: "在线搜索 68.07%，博主测评 66.27%，品牌对比 45.18%。",
+        position: "中档、科技、性价比认知清晰，但小米绑定仍强。",
+        factors: [["画质", 57.14], ["功能", 44.33], ["产品质量", 43.84]],
+        opportunities: ["APP/4G/GPS", "ADAS 误报", "高温", "售后网点", "车机兼容"]
+      },
+      {
+        id: "vn",
+        name: "越南",
+        sample: 530,
+        returned: 753,
+        nps: 48.33,
+        satisfaction: 4.0,
+        safety: 76.49,
+        user: "35-44 岁男性 SUV 车主，品牌知名度对决策影响更高。",
+        competitor: "Vietmap 75.6%，Xiaomi 32.65%",
+        channel: "TikTok 19.56%，他人推荐 13.89%，YouTube 13.53%。",
+        compare: "博主测评 65.45%，在线搜索 45.16%，品牌对比 36.75%。",
+        position: "高品质与科技创新形象突出，中档定位占 64.42%。",
+        factors: [["画质", 47.68], ["品牌知名度", 46.22], ["产品质量", 39.04]],
+        opportunities: ["价格门槛", "越南语/ADAS", "行驶轨迹同步", "360°", "正品验证"]
+      },
+      {
+        id: "in",
+        name: "印度",
+        sample: 361,
+        returned: 450,
+        nps: 37.13,
+        satisfaction: 3.9,
+        safety: 91.11,
+        user: "35-44 岁男性 SUV 车主，价格敏感但对画质期待高。",
+        competitor: "Qubo 35.82%，Redtiger 17.33%，DDPAI 13.86%",
+        channel: "YouTube 38.95%，电商 20%，他人介绍 10.79%。",
+        compare: "在线搜索 56.84%，品牌对比 50.53%，博主测评 45.53%。",
+        position: "高科技创新转型，高端/高档定位更明显，小米联想仍强。",
+        factors: [["画质", 64.22], ["性价比", 38.44], ["产品口碑", 34.22]],
+        opportunities: ["超级电容", "4G 模块", "售后支持", "价格/套装", "盲区广角"]
+      },
+      {
+        id: "ph",
+        name: "菲律宾",
+        sample: 151,
+        returned: 175,
+        nps: 51.29,
+        satisfaction: 4.09,
+        safety: 91.43,
+        user: "35-44 岁男性 SUV 车主，科技感和画质诉求更强。",
+        competitor: "DDPAI 66.67%，海康 13.98%",
+        channel: "Facebook/Instagram 28.03%，电商 26.75%，YouTube 10.19%。",
+        compare: "搜索 65.61%，品牌对比 62.42%，博主测评 61.78%。",
+        position: "高科技创新认知最强，高端/高档定位占 52.15%。",
+        factors: [["画质", 77.14], ["功能", 54.29], ["产品质量", 44]],
+        opportunities: ["夜视/烈日画质", "Wi-Fi 传输", "内存卡 Bug", "车机互联", "防伪验证"]
+      }
+    ];
+
+    const palette = ["#1a8a84", "#57a773", "#427aa1", "#e0a526", "#c75b4a", "#7b6fbd"];
+    const npsBars = document.getElementById("npsBars");
+    const sampleGrid = document.getElementById("sampleGrid");
+    const tabs = document.getElementById("countryTabs");
+    const detail = document.getElementById("countryDetail");
+    const factorBars = document.getElementById("factorBars");
+    const journeyAwareness = document.getElementById("journeyAwareness");
+    const journeyCompare = document.getElementById("journeyCompare");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let revealObserver;
+    let countObserver;
+
+    function barRow(label, value, max, color) {
+      const width = Math.max(2, value / max * 100);
+      const decimals = Number.isInteger(value) ? 0 : 1;
+      return `
+        <div class="bar-row">
+          <span>${label}</span>
+          <div class="bar-track"><div class="bar-fill" style="--value:${width}; --color:${color}"></div></div>
+          <b data-count="${value}" data-decimals="${decimals}">${Number.isInteger(value) ? value : value.toFixed(1)}</b>
+        </div>
+      `;
+    }
+
+    function formatCount(value, decimals = 0, suffix = "") {
+      const fixed = Number(value).toFixed(decimals);
+      const formatted = decimals > 0
+        ? fixed.replace(/\.0$/, "")
+        : Math.round(value).toLocaleString("en-US");
+      return `${formatted}${suffix}`;
+    }
+
+    function setFinalCount(element) {
+      const target = Number(element.dataset.count);
+      const decimals = Number(element.dataset.decimals || 0);
+      const suffix = element.dataset.suffix || "";
+      element.textContent = formatCount(target, decimals, suffix);
+    }
+
+    function animateCount(element) {
+      if (element.dataset.animated === "true") return;
+      element.dataset.animated = "true";
+
+      const target = Number(element.dataset.count);
+      const decimals = Number(element.dataset.decimals || 0);
+      const suffix = element.dataset.suffix || "";
+      const duration = Math.min(1500, Math.max(800, target * 13));
+      const start = performance.now();
+
+      function tick(now) {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        element.textContent = formatCount(target * eased, decimals, suffix);
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          setFinalCount(element);
+        }
+      }
+
+      element.textContent = formatCount(0, decimals, suffix);
+      requestAnimationFrame(tick);
+    }
+
+    function setupObservers() {
+      if (reduceMotion) return;
+
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        });
+      }, { threshold: .12, rootMargin: "0px 0px -8% 0px" });
+
+      countObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          animateCount(entry.target);
+          countObserver.unobserve(entry.target);
+        });
+      }, { threshold: .35 });
+    }
+
+    function registerMotion(root = document) {
+      const revealTargets = root.querySelectorAll([
+        ".section-head",
+        ".kpi",
+        ".insight",
+        ".panel",
+        ".sample",
+        ".country-detail",
+        ".journey-step",
+        ".action-card",
+        "blockquote",
+        ".footnote"
+      ].join(","));
+
+      revealTargets.forEach((element, index) => {
+        element.classList.add("reveal");
+        element.style.setProperty("--delay", `${Math.min(index % 6, 5) * 70}ms`);
+        if (reduceMotion) {
+          element.classList.add("is-visible");
+        } else {
+          revealObserver.observe(element);
+        }
+      });
+
+      root.querySelectorAll(".bar-list").forEach((element) => {
+        if (reduceMotion) {
+          element.classList.add("is-visible");
+        } else {
+          revealObserver.observe(element);
+        }
+      });
+
+      root.querySelectorAll("[data-count]").forEach((element) => {
+        element.dataset.animated = "false";
+        if (reduceMotion) {
+          setFinalCount(element);
+        } else {
+          element.textContent = formatCount(0, Number(element.dataset.decimals || 0), element.dataset.suffix || "");
+          countObserver.observe(element);
+        }
+      });
+    }
+
+    function replayDynamicMotion(root) {
+      if (reduceMotion) {
+        registerMotion(root);
+        return;
+      }
+      registerMotion(root);
+      requestAnimationFrame(() => {
+        root.querySelectorAll(".bar-list").forEach((element) => {
+          const rect = element.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            element.classList.add("is-visible");
+          }
+        });
+      });
+    }
+
+    function replayBars(barList) {
+      if (reduceMotion) {
+        barList.classList.add("is-visible");
+        barList.querySelectorAll("[data-count]").forEach(setFinalCount);
+        return;
+      }
+
+      barList.classList.remove("is-visible");
+      barList.querySelectorAll(".bar-fill").forEach((bar) => {
+        bar.style.transition = "none";
+        bar.style.transform = "scaleX(0)";
+      });
+
+      requestAnimationFrame(() => {
+        barList.querySelectorAll(".bar-fill").forEach((bar) => {
+          bar.style.transition = "";
+          bar.style.transform = "";
+        });
+        requestAnimationFrame(() => {
+          barList.classList.add("is-visible");
+        });
+      });
+
+      barList.querySelectorAll("[data-count]").forEach((element) => {
+        element.dataset.animated = "false";
+        animateCount(element);
+      });
+    }
+
+    function renderStaticCharts() {
+      const sorted = [...countries].sort((a, b) => b.nps - a.nps);
+      npsBars.innerHTML = sorted.map((item, index) => barRow(item.name, item.nps, 60, palette[index])).join("");
+      sampleGrid.innerHTML = countries.map((item) => `
+        <div class="sample">
+          <strong data-count="${item.sample}">${item.sample}</strong>
+          <span>${item.name}完卷 / 回收 ${item.returned}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderTabs(activeId) {
+      tabs.innerHTML = countries.map((item) => `
+        <button class="tab" type="button" role="tab" aria-selected="${item.id === activeId}" data-id="${item.id}">
+          ${item.name}
+        </button>
+      `).join("");
+      tabs.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => renderCountry(button.dataset.id));
+      });
+    }
+
+    function renderCountry(id) {
+      const item = countries.find((country) => country.id === id) || countries[0];
+      renderTabs(item.id);
+      detail.innerHTML = `
+        <h3>${item.name}</h3>
+        <p>${item.user}</p>
+        <div class="split-metrics">
+          <div class="mini-metric"><small>NPS</small><strong data-count="${item.nps}" data-decimals="1">${item.nps}</strong></div>
+          <div class="mini-metric"><small>满意度</small><strong data-count="${item.satisfaction}" data-decimals="2">${item.satisfaction}</strong></div>
+          <div class="mini-metric"><small>安全动机</small><strong data-count="${item.safety}" data-decimals="1" data-suffix="%">${item.safety}%</strong></div>
+        </div>
+        <div class="meta-row">
+          <span class="tag">竞品：${item.competitor}</span>
+          <span class="tag">样本：${item.sample} 完卷</span>
+        </div>
+        <p><strong>品牌定位：</strong>${item.position}</p>
+        <p><strong>体验机会：</strong>${item.opportunities.join(" / ")}</p>
+      `;
+      journeyAwareness.textContent = item.channel;
+      journeyCompare.textContent = item.compare;
+      factorBars.innerHTML = item.factors.map((factor, index) => barRow(factor[0], factor[1], 80, palette[index])).join("");
+      replayDynamicMotion(document.getElementById("country"));
+      replayBars(factorBars);
+    }
+
+    setupObservers();
+    renderStaticCharts();
+    renderCountry("my");
+    registerMotion(document);
+  </script>
+</body>
+</html>
