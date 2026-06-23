@@ -3,22 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026 东南亚品牌调研体验报告</title>
+  <title>智能记录仪品牌与竞品体验调研报告</title>
   <style>
     :root {
-      --ink: #172026;
-      --muted: #65717a;
-      --line: #d9e1e6;
-      --paper: #f7f4ee;
+      --ink: #202124;
+      --muted: #667085;
+      --line: #d9dee7;
+      --paper: #f6f3ed;
       --panel: #ffffff;
-      --teal: #1a8a84;
-      --green: #57a773;
-      --blue: #427aa1;
-      --yellow: #e0a526;
-      --red: #c75b4a;
-      --violet: #7b6fbd;
-      --shadow: 0 18px 46px rgba(23, 32, 38, .12);
-      font-family: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      --green: #FF631B;
+      --teal: #FF9E49;
+      --amber: #bc6c25;
+      --red: #b42318;
+      --blue: #2563eb;
+      --violet: #7c3aed;
+      --sidebar-icon: #8a8a8a;
+      --sidebar-hover: #ececec;
+      --sidebar-hover-ink: #202124;
+      --sidebar-control-radius: 12px;
+      --grad-start: #FF9E49;
+      --grad-end: #FF631B;
+      --shadow: 0 16px 40px rgba(32, 33, 36, .08);
     }
 
     * { box-sizing: border-box; }
@@ -28,687 +33,852 @@
     body {
       margin: 0;
       color: var(--ink);
-      background:
-        linear-gradient(180deg, rgba(26, 138, 132, .10), transparent 360px),
-        var(--paper);
+      background: var(--paper);
+      font: 14px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     }
 
-    button, input { font: inherit; }
+    a { color: inherit; }
 
-    .page-shell { min-height: 100vh; }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(22px);
-      transition:
-        opacity .72s cubic-bezier(.2, .8, .2, 1),
-        transform .72s cubic-bezier(.2, .8, .2, 1);
-      transition-delay: var(--delay, 0ms);
-      will-change: opacity, transform;
-    }
-
-    .reveal.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .hero .eyebrow,
-    .hero h1,
-    .hero-copy,
-    .hero-actions {
-      animation: heroRise .84s cubic-bezier(.2, .8, .2, 1) both;
-    }
-
-    .hero h1 { animation-delay: .08s; }
-    .hero-copy { animation-delay: .18s; }
-    .hero-actions { animation-delay: .28s; }
-
-    @keyframes heroRise {
-      from { opacity: 0; transform: translateY(22px); }
+    @keyframes softRise {
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 14px clamp(18px, 4vw, 54px);
-      background: rgba(247, 244, 238, .86);
-      border-bottom: 1px solid rgba(23, 32, 38, .08);
-      backdrop-filter: blur(18px);
+    @keyframes pillPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 99, 27, 0); }
+      50% { box-shadow: 0 0 0 6px rgba(255, 99, 27, .12); }
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
+    .layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      min-height: 100vh;
+      transition: grid-template-columns .22s ease;
+    }
+
+    .layout.is-sidebar-collapsed {
+      grid-template-columns: 80px minmax(0, 1fr);
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 20px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, .72);
+      backdrop-filter: blur(12px);
+      transition: padding .22s ease;
+      z-index: 5;
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 22px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: var(--sidebar-control-radius);
+      color: var(--sidebar-icon);
+      background: transparent;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease, left .22s ease, right .22s ease;
+    }
+
+    .sidebar-toggle:hover,
+    .sidebar-toggle:focus-visible {
+      color: var(--sidebar-hover-ink);
+      background: var(--sidebar-hover);
+      outline: 0;
+    }
+
+    .sidebar-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sidebar-toggle::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 10px);
+      transform: translateX(-50%) translateY(-3px);
+      padding: 7px 10px;
+      border-radius: 8px;
+      color: #fff;
+      background: #1f1f1f;
+      box-shadow: 0 8px 18px rgba(0,0,0,.18);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .sidebar-toggle:hover::after,
+    .sidebar-toggle:focus-visible::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     .brand-mark {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      background: var(--ink);
-      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 26px;
+      padding-right: 46px;
       font-weight: 800;
       letter-spacing: 0;
     }
 
-    .brand strong { display: block; font-size: 14px; white-space: nowrap; }
-    .brand span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      overflow-x: auto;
-      padding-bottom: 2px;
+    .brand-copy {
+      min-width: 0;
+      transition: opacity .16s ease, transform .22s ease;
     }
 
-    .nav a {
-      color: var(--muted);
-      text-decoration: none;
-      padding: 8px 10px;
+    .mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
       border-radius: 8px;
-      font-size: 13px;
+      color: #fff;
+      background: var(--green);
+      font-weight: 900;
+    }
+
+    .layout.is-sidebar-collapsed aside {
+      padding: 78px 20px 28px;
+    }
+
+    .layout.is-sidebar-collapsed .sidebar-toggle {
+      left: 20px;
+      right: auto;
+      top: 22px;
+    }
+
+    .layout.is-sidebar-collapsed .sidebar-toggle::after {
+      left: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%) translateX(-3px);
+    }
+
+    .layout.is-sidebar-collapsed .sidebar-toggle:hover::after,
+    .layout.is-sidebar-collapsed .sidebar-toggle:focus-visible::after {
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .layout.is-sidebar-collapsed .brand-mark {
+      display: none;
+    }
+
+    .layout.is-sidebar-collapsed .brand-copy,
+    .layout.is-sidebar-collapsed nav span {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateX(-6px);
+      pointer-events: none;
       white-space: nowrap;
     }
 
-    .nav a:hover { background: rgba(23, 32, 38, .06); color: var(--ink); }
+    nav {
+      display: grid;
+      gap: 6px;
+    }
 
-    main { padding-bottom: 80px; }
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: var(--sidebar-icon);
+      text-decoration: none;
+      font-size: 13px;
+      transition: background .18s ease, color .18s ease, transform .18s ease;
+    }
 
-    section {
-      padding: 54px clamp(18px, 5vw, 72px);
+    nav span {
+      min-width: 0;
+      white-space: nowrap;
+      transition: opacity .16s ease, transform .22s ease;
+    }
+
+    .layout.is-sidebar-collapsed nav a {
+      display: grid;
+      place-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      min-height: 40px;
+      padding: 10px 0 0;
+      gap: 0;
+      border-radius: var(--sidebar-control-radius);
+      color: var(--sidebar-icon);
+      background: transparent;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    .layout.is-sidebar-collapsed nav {
+      justify-items: center;
+    }
+
+    nav svg {
+      flex: 0 0 auto;
+      display: block;
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform .18s ease;
+    }
+
+    nav svg.icon-lg {
+      width: 18px;
+      height: 18px;
+    }
+
+    nav svg.icon-wide {
+      width: 19px;
+      height: 17px;
+    }
+
+    nav a:hover {
+      color: var(--ink);
+      background: var(--sidebar-hover);
+      transform: translateX(2px);
+    }
+
+    nav a:hover svg,
+    nav a:focus-visible svg {
+      transform: scale(1.08);
+    }
+
+    .layout.is-sidebar-collapsed nav a:hover,
+    .layout.is-sidebar-collapsed nav a:focus-visible {
+      color: var(--sidebar-hover-ink);
+      background: var(--sidebar-hover);
+      transform: none;
+      outline: 0;
+    }
+
+    main {
+      padding: 30px clamp(30px, 3vw, 48px);
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .layout.is-sidebar-collapsed main {
+      max-width: 1760px;
     }
 
     .hero {
-      min-height: 88vh;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
-      align-items: center;
-      gap: clamp(28px, 6vw, 76px);
-      padding-top: 52px;
-      padding-bottom: 42px;
-      border-bottom: 1px solid rgba(23, 32, 38, .08);
+      position: relative;
+      overflow: hidden;
+      min-height: 330px;
+      padding: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(120deg, rgba(255,158,73,.96), rgba(255,99,27,.92)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='520' viewBox='0 0 1200 520'%3E%3Crect width='1200' height='520' fill='%23f5efe5'/%3E%3Cg fill='none' stroke='%23202124' stroke-width='3' opacity='.26'%3E%3Cpath d='M82 372c118-84 237-126 356-126 182 0 272 98 438 98 92 0 174-31 246-92'/%3E%3Cpath d='M96 160h186c30 0 55 19 66 47l17 43h281l21-54c9-22 31-36 55-36h171c45 0 82 37 82 82v84c0 45-37 82-82 82H96c-45 0-82-37-82-82v-84c0-45 37-82 82-82Z'/%3E%3Ccircle cx='234' cy='408' r='54'/%3E%3Ccircle cx='846' cy='408' r='54'/%3E%3Cpath d='M456 190h166v116H456zM686 190h166v116H686z'/%3E%3Cpath d='M560 146c24-44 74-70 130-70 78 0 142 50 157 118'/%3E%3C/g%3E%3Cg fill='%23202124' opacity='.22'%3E%3Ccircle cx='1050' cy='110' r='8'/%3E%3Ccircle cx='1084' cy='158' r='5'/%3E%3Ccircle cx='1018' cy='192' r='6'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      box-shadow: var(--shadow);
+      color: #fff;
+      animation: softRise .58s cubic-bezier(.2,.8,.2,1) both;
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--teal);
-      font-size: 13px;
-      font-weight: 750;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    .pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--teal);
-      box-shadow: 0 0 0 6px rgba(26, 138, 132, .14);
-      animation: pulseBeat 1.8s ease-out infinite;
-    }
-
-    @keyframes pulseBeat {
-      0%, 100% { box-shadow: 0 0 0 6px rgba(26, 138, 132, .14); }
-      50% { box-shadow: 0 0 0 10px rgba(26, 138, 132, .05); }
+      margin-bottom: 20px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      font-size: 12px;
+      font-weight: 700;
     }
 
     h1 {
-      margin: 18px 0 18px;
-      max-width: 860px;
-      font-size: clamp(42px, 7vw, 88px);
-      line-height: .98;
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(32px, 5vw, 62px);
+      line-height: 1.08;
       letter-spacing: 0;
     }
 
-    .hero-copy {
+    .hero p {
       max-width: 720px;
-      color: #3c484f;
-      font-size: clamp(17px, 2vw, 22px);
-      line-height: 1.7;
+      margin: 18px 0 0;
+      font-size: 16px;
+      color: rgba(255,255,255,.88);
     }
 
-    .hero-actions {
+    .meta-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
+      gap: 10px;
+      margin-top: 26px;
     }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0 16px;
-      border: 1px solid var(--ink);
+    .meta-pill {
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.42);
       border-radius: 8px;
-      color: var(--ink);
-      background: transparent;
-      text-decoration: none;
-      cursor: pointer;
+      background: rgba(255,255,255,.16);
+      font-size: 12px;
       font-weight: 700;
-      font-size: 14px;
-      box-shadow: 0 0 0 rgba(23, 32, 38, 0);
-      transition:
-        color .22s ease,
-        background-color .22s ease,
-        border-color .22s ease,
-        box-shadow .22s ease,
-        transform .22s ease;
+      transition: transform .18s ease, background .18s ease;
     }
 
-    .btn.primary {
-      color: #fff;
-      background: var(--ink);
-      box-shadow: 0 12px 22px rgba(23, 32, 38, .18);
-    }
-
-    .btn:hover {
-      color: var(--ink);
-      background: rgba(26, 138, 132, .10);
-      border-color: var(--teal);
-      box-shadow: 0 12px 24px rgba(23, 32, 38, .12);
+    .meta-pill:hover {
       transform: translateY(-2px);
+      background: rgba(255,255,255,.24);
     }
 
-    .btn.primary:hover {
-      color: #fff;
-      background: #203139;
-      border-color: #203139;
-      box-shadow: 0 18px 32px rgba(23, 32, 38, .24);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 14px rgba(23, 32, 38, .12);
-    }
-
-    .btn:focus-visible {
-      outline: 3px solid rgba(26, 138, 132, .28);
-      outline-offset: 3px;
-    }
-
-    .hero-visual {
-      position: relative;
-      min-height: 520px;
-      display: grid;
-      place-items: center;
-    }
-
-    .region-map {
-      width: min(100%, 520px);
-      aspect-ratio: 1 / 1;
-      position: relative;
-    }
-
-    .sea-card {
-      position: absolute;
-      inset: 7% 5%;
+    section {
+      margin-top: 30px;
+      padding: 28px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .58)),
-        radial-gradient(circle at 24% 34%, rgba(66, 122, 161, .28), transparent 22%),
-        radial-gradient(circle at 76% 68%, rgba(224, 165, 38, .25), transparent 26%);
-      border: 1px solid rgba(23, 32, 38, .10);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      animation: cardFloatIn .9s cubic-bezier(.2, .8, .2, 1) .18s both;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 10px 26px rgba(32,33,36,.04);
     }
-
-    @keyframes cardFloatIn {
-      from { opacity: 0; transform: translateY(24px) scale(.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .sea-card svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .country-pin {
-      position: absolute;
-      display: grid;
-      gap: 5px;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      animation: pinDrop .56s cubic-bezier(.2, .8, .2, 1) both;
-    }
-
-    .country-pin:nth-of-type(2) { animation-delay: .34s; }
-    .country-pin:nth-of-type(3) { animation-delay: .42s; }
-    .country-pin:nth-of-type(4) { animation-delay: .50s; }
-    .country-pin:nth-of-type(5) { animation-delay: .58s; }
-    .country-pin:nth-of-type(6) { animation-delay: .66s; }
-    .country-pin:nth-of-type(7) { animation-delay: .74s; }
-
-    @keyframes pinDrop {
-      from { opacity: 0; transform: translate(-50%, -62%) scale(.86); }
-      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    }
-
-    .country-pin i {
-      width: 16px;
-      height: 16px;
-      margin: 0 auto;
-      border: 3px solid #fff;
-      border-radius: 50%;
-      background: var(--teal);
-      box-shadow: 0 8px 18px rgba(23, 32, 38, .24);
-    }
-
-    .country-pin span {
-      display: block;
-      padding: 4px 7px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, .9);
-      color: var(--ink);
-      font-size: 11px;
-      font-weight: 800;
-      box-shadow: 0 7px 16px rgba(23, 32, 38, .12);
-      white-space: nowrap;
-    }
-
-    .pin-th { left: 51%; top: 44%; }
-    .pin-vn { left: 64%; top: 40%; }
-    .pin-my { left: 45%; top: 63%; }
-    .pin-id { left: 60%; top: 74%; }
-    .pin-ph { left: 78%; top: 53%; }
-    .pin-in { left: 24%; top: 42%; }
-
-    .floating-metric {
-      position: absolute;
-      left: 0;
-      bottom: 9%;
-      width: 180px;
-      padding: 16px;
-      border-radius: 8px;
-      background: #fff;
-      border: 1px solid rgba(23, 32, 38, .10);
-      box-shadow: 0 14px 36px rgba(23, 32, 38, .14);
-      animation: metricPop .66s cubic-bezier(.2, .8, .2, 1) .86s both;
-    }
-
-    @keyframes metricPop {
-      from { opacity: 0; transform: translateY(18px) scale(.94); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .floating-metric b { display: block; font-size: 30px; line-height: 1; }
-    .floating-metric span { display: block; color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.4; }
 
     .section-head {
       display: flex;
-      align-items: end;
       justify-content: space-between;
-      gap: 28px;
-      margin-bottom: 24px;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 22px;
     }
 
-    .section-head h2 {
+    h2 {
       margin: 0;
-      max-width: 780px;
-      font-size: clamp(28px, 4vw, 48px);
-      line-height: 1.12;
+      font-size: 24px;
+      line-height: 1.2;
       letter-spacing: 0;
     }
 
-    .section-head p {
-      margin: 0;
+    .section-note {
       max-width: 520px;
+      margin: 0;
       color: var(--muted);
-      line-height: 1.7;
+      font-size: 13px;
     }
 
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
-      margin-top: 26px;
     }
 
-    .kpi, .panel, .country-detail, .action-card {
-      background: rgba(255, 255, 255, .82);
-      border: 1px solid rgba(23, 32, 38, .10);
+    .kpi {
+      padding: 18px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      box-shadow: 0 10px 26px rgba(23, 32, 38, .08);
+      background: var(--panel);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
 
-    .kpi { padding: 18px; min-height: 142px; }
-    .kpi small { display: block; color: var(--muted); font-weight: 700; }
-    .kpi strong { display: block; margin-top: 14px; font-size: clamp(28px, 4vw, 46px); letter-spacing: 0; }
-    .kpi > span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .kpi:hover {
+      transform: translateY(-2px);
+      border-color: #c7ccd5;
+      box-shadow: 0 12px 28px rgba(32, 33, 36, .08);
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .kpi span {
+      color: var(--muted);
+      font-size: 13px;
+    }
 
     .insight-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
-      margin-top: 24px;
     }
 
     .insight {
-      min-height: 260px;
-      padding: 22px;
-      background: var(--ink);
-      color: #fff;
+      padding: 18px;
+      min-height: 180px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      position: relative;
-      overflow: hidden;
+      background: var(--panel);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
 
-    .insight:nth-child(2) { background: #214c55; }
-    .insight:nth-child(3) { background: #5d5132; }
-    .insight::after {
-      content: "";
-      position: absolute;
-      right: -22px;
-      bottom: -22px;
-      width: 120px;
-      height: 120px;
-      border: 18px solid rgba(255,255,255,.09);
-      border-radius: 50%;
-    }
-    .insight h3 { margin: 0; font-size: 22px; }
-    .insight p { margin: 16px 0 0; color: rgba(255,255,255,.78); line-height: 1.7; }
-    .insight .tag { color: #fff; border-color: rgba(255,255,255,.26); background: rgba(255,255,255,.10); }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 16px;
-      align-items: stretch;
-    }
-
-    .panel { padding: 20px; }
-    .panel h3 { margin: 0 0 16px; font-size: 18px; }
-
-    .bar-list { display: grid; gap: 12px; }
-    .bar-row {
-      display: grid;
-      grid-template-columns: 94px minmax(0, 1fr) 56px;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-    }
-
-    .bar-track {
-      height: 13px;
-      border-radius: 999px;
-      background: rgba(23, 32, 38, .08);
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      width: calc(var(--value) * 1%);
-      border-radius: inherit;
-      background: var(--color, var(--teal));
-      transform: scaleX(0);
-      transform-origin: left center;
-      transition: transform 1s cubic-bezier(.2, .8, .2, 1);
-    }
-
-    .bar-list.is-visible .bar-fill,
-    .panel.is-visible .bar-fill {
-      transform: scaleX(1);
-    }
-
-    .bar-row b { text-align: right; font-variant-numeric: tabular-nums; }
-
-    .sample-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .sample {
-      padding: 14px;
-      border-radius: 8px;
-      background: rgba(23, 32, 38, .04);
-      border: 1px solid rgba(23, 32, 38, .07);
-    }
-
-    .sample strong { display: block; font-size: 24px; }
-    .sample span { color: var(--muted); font-size: 12px; }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-
-    .tab {
-      min-height: 38px;
-      padding: 0 13px;
-      border: 1px solid rgba(23, 32, 38, .18);
-      border-radius: 8px;
-      background: rgba(255,255,255,.68);
-      color: var(--muted);
-      cursor: pointer;
-      font-weight: 750;
-    }
-
-    .tab[aria-selected="true"] {
-      color: #fff;
-      border-color: var(--ink);
-      background: var(--ink);
-    }
-
-    .country-layout {
-      display: grid;
-      grid-template-columns: minmax(0, .95fr) minmax(360px, 1.05fr);
-      gap: 16px;
-    }
-
-    .country-detail { padding: 22px; }
-    .country-detail h3 { margin: 0; font-size: 30px; }
-    .country-detail p { color: var(--muted); line-height: 1.7; }
-
-    .meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 16px 0;
+    .insight:hover {
+      transform: translateY(-2px);
+      border-color: #c7ccd5;
+      box-shadow: 0 12px 28px rgba(32, 33, 36, .08);
     }
 
     .tag {
       display: inline-flex;
       align-items: center;
-      min-height: 28px;
-      padding: 0 9px;
-      border: 1px solid rgba(23, 32, 38, .12);
-      border-radius: 8px;
-      color: #3c484f;
-      background: rgba(255,255,255,.62);
+      justify-content: flex-start;
+      margin-bottom: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--teal);
       font-size: 12px;
-      font-weight: 750;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      transition: transform .18s ease, box-shadow .18s ease;
     }
 
-    .split-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin: 18px 0;
+    .insight:hover .tag,
+    .brand-card:hover .tag,
+    .opportunity:hover .tag {
+      animation: pillPulse 1.2s ease;
     }
 
-    .mini-metric {
-      padding: 12px;
+    .tag.amber { background: var(--amber); }
+    .tag.red { background: var(--red); }
+    .tag.blue { background: var(--blue); }
+    .tag.violet { background: var(--violet); }
+    .tag.green { background: var(--green); }
+
+    .insight h3,
+    .brand-card h3,
+    .opportunity h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .insight p,
+    .brand-card p,
+    .opportunity p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: rgba(23,32,38,.045);
+      background: var(--panel);
     }
 
-    .mini-metric small { color: var(--muted); display: block; }
-    .mini-metric strong { display: block; margin-top: 6px; font-size: 23px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #f9fafb;
+      font-size: 12px;
+      color: #475467;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    tbody tr {
+      transition: background .16s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(32, 33, 36, .035);
+    }
+
+    .score {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      transition: transform .18s ease;
+    }
+
+    tbody tr:hover .score {
+      transform: scale(1.08);
+    }
+
+    .s5 { background: var(--green); }
+    .s4 { background: var(--teal); }
+    .s3 { background: var(--amber); }
+    .s2 { background: var(--red); }
+    .s1 { background: #737373; }
+
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .brand-card {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: inherit;
+      text-decoration: none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .brand-card::after,
+    .source::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.42) 42%, transparent 64%);
+      transform: translateX(-120%);
+      transition: transform .42s ease;
+      pointer-events: none;
+    }
+
+    .brand-card:hover,
+    .brand-card:focus-visible {
+      transform: translateY(-3px);
+      border-color: #c7ccd5;
+      box-shadow: 0 14px 32px rgba(32, 33, 36, .10);
+      outline: 0;
+    }
+
+    .brand-card:hover::after,
+    .brand-card:focus-visible::after,
+    .source:hover::after,
+    .source:focus-visible::after {
+      transform: translateX(120%);
+    }
+
+    .brand-card:hover h3,
+    .brand-card:focus-visible h3 {
+      color: var(--ink);
+    }
+
+    .brand-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .brand-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .logo {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 900;
+      transition: transform .2s ease;
+    }
+
+    .brand-card:hover .logo,
+    .brand-card:focus-visible .logo {
+      transform: scale(1.04);
+    }
+
+    .brand-meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fafafa;
+      color: #475467;
+      font-size: 12px;
+      white-space: nowrap;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+      border-color: #c7ccd5;
+      background: #f5f6f8;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 116px 1fr 42px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .track {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8edf1;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+      transform-origin: left center;
+    }
+
+    .bars.is-animated .fill {
+      transform: scaleX(0);
+      transition: transform .9s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .bars.is-visible .fill {
+      transform: scaleX(1);
+    }
+
+    .fill.teal { background: var(--teal); }
+    .fill.amber { background: var(--amber); }
+    .fill.red { background: var(--red); }
+    .fill.blue { background: var(--blue); }
 
     .journey {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 14px;
     }
 
-    .journey-step {
-      padding: 14px;
-      border: 1px solid rgba(23,32,38,.10);
+    .step {
+      position: relative;
+      padding: 16px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fff;
-      min-height: 126px;
+      background: var(--panel);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
 
-    .journey-step small {
-      display: inline-grid;
-      place-items: center;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      color: #fff;
-      background: var(--teal);
-      font-weight: 800;
-    }
-
-    .journey-step b { display: block; margin-top: 12px; }
-    .journey-step span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.45; }
-
-    .matrix {
-      display: grid;
-      gap: 8px;
-    }
-
-    .matrix-row {
-      display: grid;
-      grid-template-columns: 116px repeat(6, minmax(0, 1fr));
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .matrix-cell {
-      min-height: 48px;
-      display: grid;
-      place-items: center;
-      padding: 8px;
-      border-radius: 8px;
-      background: rgba(23,32,38,.05);
-      color: var(--muted);
-      text-align: center;
-      font-size: 12px;
-      font-weight: 750;
-    }
-
-    .matrix-cell.head { color: var(--ink); background: transparent; box-shadow: none; }
-    .matrix-cell.hot { color: #fff; background: var(--red); }
-    .matrix-cell.warm { color: var(--ink); background: rgba(224,165,38,.48); }
-    .matrix-cell.cool { color: #fff; background: var(--teal); }
-
-    .matrix-cell.hot,
-    .matrix-cell.warm,
-    .matrix-cell.cool {
-      transition: transform .28s ease, box-shadow .28s ease;
-    }
-
-    .matrix-cell.hot:hover,
-    .matrix-cell.warm:hover,
-    .matrix-cell.cool:hover {
+    .step:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 18px rgba(23,32,38,.12);
+      border-color: #c7ccd5;
+      box-shadow: 0 12px 28px rgba(32, 33, 36, .08);
     }
 
-    .action-grid {
+    .step-num {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--green);
+      font-weight: 800;
+      transition: transform .18s ease;
+    }
+
+    .step:hover .step-num {
+      transform: scale(1.06);
+    }
+
+    .step h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .opportunity-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
     }
 
-    .action-card { padding: 20px; }
-    .action-card h3 { margin: 0; font-size: 20px; }
-    .action-card p { color: var(--muted); line-height: 1.65; }
+    .ai-panel {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
+      gap: 18px;
+      margin-bottom: 14px;
+      padding: 22px;
+      border: 1px solid rgba(255,99,27,.34);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,158,73,.15), rgba(255,255,255,.96) 46%, rgba(255,99,27,.12));
+    }
+
+    .ai-panel h3 {
+      margin: 8px 0 10px;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .ai-panel p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .ai-item {
+      padding: 14px;
+      border: 1px solid rgba(255,99,27,.2);
+      border-radius: 8px;
+      background: rgba(255,255,255,.82);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .ai-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,99,27,.34);
+      background: #fff;
+    }
+
+    .ai-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .ai-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .opportunity {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .opportunity:hover {
+      transform: translateY(-2px);
+      border-color: #c7ccd5;
+      box-shadow: 0 12px 28px rgba(32, 33, 36, .08);
+    }
 
     .priority {
       display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--teal);
+      margin-top: 14px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--ink);
       font-size: 12px;
-      font-weight: 850;
-      letter-spacing: .04em;
-      text-transform: uppercase;
+      font-weight: 700;
+      transition: transform .18s ease;
     }
 
-    .priority::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
+    .opportunity:hover .priority {
+      transform: translateX(2px);
     }
 
-    .quote-strip {
+    .source-list {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 22px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
-    blockquote {
-      margin: 0;
-      padding: 18px;
-      border-left: 4px solid var(--teal);
-      border-radius: 8px;
-      background: rgba(255,255,255,.78);
-      color: #3c484f;
-      line-height: 1.7;
-    }
-
-    blockquote cite {
+    .source {
       display: block;
-      margin-top: 12px;
+      position: relative;
+      overflow: hidden;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: inherit;
+      text-decoration: none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .source:hover,
+    .source:focus-visible {
+      transform: translateY(-3px);
+      border-color: #c7ccd5;
+      box-shadow: 0 14px 32px rgba(32, 33, 36, .10);
+      outline: 0;
+    }
+
+    .source strong {
+      display: block;
+      font-weight: 800;
+      color: var(--ink);
+      transition: color .18s ease;
+    }
+
+    .source:hover strong,
+    .source:focus-visible strong {
+      color: var(--ink);
+    }
+
+    .source small {
+      display: block;
+      margin-top: 6px;
       color: var(--muted);
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 750;
-    }
-
-    .footnote {
-      padding-top: 28px;
-      color: var(--muted);
-      border-top: 1px solid rgba(23,32,38,.10);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 1100px) {
-      .hero, .dashboard, .country-layout { grid-template-columns: 1fr; }
-      .hero { min-height: auto; }
-      .hero-visual { min-height: 420px; }
-      .kpi-grid, .insight-grid, .action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .journey { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (max-width: 740px) {
-      .topbar { align-items: flex-start; flex-direction: column; gap: 10px; }
-      section { padding: 40px 16px; }
-      .hero { padding-top: 36px; }
-      .section-head { display: block; }
-      .section-head p { margin-top: 12px; }
-      .kpi-grid, .insight-grid, .action-grid, .quote-strip, .sample-grid, .split-metrics { grid-template-columns: 1fr; }
-      .matrix { overflow-x: auto; padding-bottom: 8px; }
-      .matrix-row { min-width: 760px; }
-      .bar-row { grid-template-columns: 82px minmax(0, 1fr) 48px; }
-      .floating-metric { left: 12px; bottom: 0; }
-      .country-pin span { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -720,606 +890,933 @@
         scroll-behavior: auto !important;
         transition-duration: .001ms !important;
       }
+    }
 
-      .reveal { opacity: 1; transform: none; }
-      .bar-fill { transform: scaleX(1); }
+    .footnote {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .sidebar-toggle { right: 18px; }
+      .layout.is-sidebar-collapsed {
+        grid-template-columns: 1fr;
+      }
+      .layout.is-sidebar-collapsed aside {
+        height: 72px;
+        padding: 18px 20px;
+        overflow: hidden;
+      }
+      .layout.is-sidebar-collapsed .brand-mark {
+        display: flex;
+        justify-content: flex-start;
+      }
+      .layout.is-sidebar-collapsed .brand-copy {
+        width: auto;
+        opacity: 1;
+        overflow: visible;
+        transform: none;
+        pointer-events: auto;
+      }
+      .layout.is-sidebar-collapsed .sidebar-toggle {
+        left: auto;
+        right: 18px;
+        top: 16px;
+      }
+      .layout.is-sidebar-collapsed .sidebar-toggle::after {
+        left: 50%;
+        top: calc(100% + 10px);
+        transform: translateX(-50%) translateY(-3px);
+      }
+      .layout.is-sidebar-collapsed .sidebar-toggle:hover::after,
+      .layout.is-sidebar-collapsed .sidebar-toggle:focus-visible::after {
+        transform: translateX(-50%) translateY(0);
+      }
+      nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      main { padding: 30px; }
+      .kpi-grid,
+      .insight-grid,
+      .brand-grid,
+      .opportunity-grid,
+      .source-list,
+      .journey,
+      .ai-panel,
+      .ai-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        display: block;
+      }
+      .section-note { margin-top: 8px; }
+    }
+
+    @media (min-width: 1500px) {
+      .brand-grid,
+      .source-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero h1 {
+        max-width: 960px;
+      }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .layout { display: block; }
+      aside { display: none; }
+      main { max-width: none; padding: 0; }
+      section,
+      .hero {
+        break-inside: avoid;
+        box-shadow: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">70</div>
-        <div>
-          <strong>东南亚品牌调研体验报告</strong>
-          <span>内部复盘版 · 问卷投放 2026.04.25-05.25</span>
+  <div class="layout" id="reportLayout">
+    <aside>
+      <button class="sidebar-toggle" type="button" aria-label="关闭边栏" aria-expanded="true" aria-controls="reportNav" data-tooltip="关闭边栏">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="4"/><path d="M10 5v14"/></svg>
+      </button>
+      <div class="brand-mark">
+        <div class="mark">70</div>
+        <div class="brand-copy">
+          <div>竞品体验研究</div>
+          <div class="brand-meta">UX Report</div>
         </div>
       </div>
-      <nav class="nav" aria-label="页面导航">
-        <a href="#overview">概览</a>
-        <a href="#compare">国家对比</a>
-        <a href="#country">国家画像</a>
-        <a href="#pain">痛点矩阵</a>
-        <a href="#actions">体验机会</a>
+      <nav id="reportNav" aria-label="报告目录">
+        <a href="#summary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14"/><path d="M5 12h14"/><path d="M5 19h10"/></svg><span>结论摘要</span></a>
+        <a href="#landscape"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/></svg><span>品牌格局</span></a>
+        <a href="#matrix"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/><path d="M9 5v14"/><path d="M15 5v14"/></svg><span>体验矩阵</span></a>
+        <a href="#brands"><svg class="icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6z"/><path d="M9 10h6"/><path d="M9 14h4"/></svg><span>品牌卡片</span></a>
+        <a href="#journey"><svg class="icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17c3-8 11-8 14 0"/><path d="M7 17h10"/><path d="M9 17a3 3 0 0 0 6 0"/></svg><span>关键链路</span></a>
+        <a href="#opportunities"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M8 14a6 6 0 1 1 8 0c-1 1-1 2-1 4H9c0-2 0-3-1-4z"/></svg><span>设计机会</span></a>
+        <a href="#screenshot-plan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5h2"/><path d="M18 5h2v2"/><path d="M20 17v2h-2"/><path d="M6 19H4v-2"/><path d="M8 9h8v6H8z"/></svg><span>截图墙任务</span></a>
+        <a href="#sources"><svg class="icon-wide" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16H7z"/><path d="M10 8h4"/><path d="M10 12h4"/><path d="M10 16h2"/></svg><span>资料来源</span></a>
       </nav>
-    </header>
+    </aside>
 
     <main>
-      <section class="hero" id="top">
-        <div>
-          <span class="eyebrow"><i class="pulse"></i> Experience review dashboard</span>
-          <h1>安全刚需明确，体验短板集中在连接、远程与高温可靠性。</h1>
-          <p class="hero-copy">
-            这份网页把六国问卷从“品牌报告”重组为体验复盘：先看市场共同结构，再定位每个国家的差异化机会，最后沉淀为产品、交互、用研和服务侧可推进的行动清单。
-          </p>
-          <div class="hero-actions">
-            <a class="btn primary" href="#overview">查看关键结论</a>
-            <a class="btn" href="#actions">跳到行动建议</a>
-          </div>
+      <header class="hero">
+        <div class="eyebrow">内部研究 · 2026-06-22 · 公开资料 + 已收集资料整理</div>
+        <h1>智能记录仪品牌与竞品体验调研报告</h1>
+        <p>面向 70迈用户体验设计团队，聚焦智能记录仪在连接、视频管理、停车守护、远程能力、专业参数和本地化体验上的竞争态势。</p>
+        <div class="meta-row">
+          <div class="meta-pill">覆盖 14 个品牌</div>
+          <div class="meta-pill">8 类核心体验维度</div>
+          <div class="meta-pill">公开网页来源可追溯</div>
         </div>
+      </header>
 
-        <div class="hero-visual" aria-label="东南亚重点国家示意">
-          <div class="region-map">
-            <div class="sea-card">
-              <svg viewBox="0 0 520 520" role="img" aria-label="调研国家分布与品牌体验概览">
-                <defs>
-                  <linearGradient id="g1" x1="0" x2="1">
-                    <stop offset="0" stop-color="#1a8a84" stop-opacity=".72"/>
-                    <stop offset="1" stop-color="#427aa1" stop-opacity=".72"/>
-                  </linearGradient>
-                </defs>
-                <path d="M58 238 C118 152 162 116 234 94 C302 72 386 91 443 144" fill="none" stroke="url(#g1)" stroke-width="20" stroke-linecap="round" opacity=".22"/>
-                <path d="M86 344 C162 291 230 279 314 303 C378 321 415 356 462 411" fill="none" stroke="#e0a526" stroke-width="24" stroke-linecap="round" opacity=".22"/>
-                <path d="M112 206 L177 168 L247 185 L294 240 L263 301 L185 311 L126 276 Z" fill="#ffffff" opacity=".58"/>
-                <path d="M312 142 L378 170 L403 231 L375 291 L314 276 L285 211 Z" fill="#ffffff" opacity=".58"/>
-                <path d="M264 343 L350 319 L434 356 L455 420 L392 454 L304 421 Z" fill="#ffffff" opacity=".58"/>
-                <g fill="none" stroke="#172026" stroke-opacity=".08" stroke-width="1">
-                  <path d="M60 80 H460"/>
-                  <path d="M60 180 H460"/>
-                  <path d="M60 280 H460"/>
-                  <path d="M60 380 H460"/>
-                  <path d="M120 60 V460"/>
-                  <path d="M220 60 V460"/>
-                  <path d="M320 60 V460"/>
-                  <path d="M420 60 V460"/>
-                </g>
-              </svg>
-            </div>
-            <div class="country-pin pin-in"><i></i><span>印度 NPS 37</span></div>
-            <div class="country-pin pin-th"><i></i><span>泰国 NPS 55</span></div>
-            <div class="country-pin pin-vn"><i></i><span>越南 NPS 48</span></div>
-            <div class="country-pin pin-my"><i></i><span>马来西亚 NPS 54</span></div>
-            <div class="country-pin pin-id"><i></i><span>印尼 NPS 42</span></div>
-            <div class="country-pin pin-ph"><i></i><span>菲律宾 NPS 51</span></div>
-            <div class="floating-metric">
-              <b data-count="1507">1,507</b>
-              <span>六国完卷样本，来自 70mai APP banner 投放</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="overview">
+      <section id="summary">
         <div class="section-head">
-          <h2>一屏读懂：品牌口碑强，但体验问题高度集中。</h2>
-          <p>六国核心用户画像趋同，购买动机稳定指向安全防护。复盘重点不应只看传播和定位，更要把“连接失败、远程不稳、高温关机”作为跨国家体验债务处理。</p>
+          <div>
+            <h2>结论摘要</h2>
+          </div>
+          <p class="section-note">公开资料显示，2025-2026 年智能记录仪竞争从单纯影像规格，进一步转向“全天候守护 + App证据管理 + 云/4G远程连接”。</p>
         </div>
 
         <div class="kpi-grid">
           <div class="kpi">
-            <small>完卷样本</small>
-            <strong data-count="1507">1,507</strong>
-            <span>越南和印度贡献最大样本量，可作为后续深访优先池。</span>
+            <strong>4K+</strong>
+            <span>旗舰产品持续把前后多路高清、HDR、夜视作为硬件卖点。</span>
           </div>
           <div class="kpi">
-            <small>安全防护购买动机</small>
-            <strong data-count="75" data-suffix="%+">75%+</strong>
-            <span>六国均为首要动机，多国超过 90%。</span>
+            <strong>4G</strong>
+            <span>远程查看、停车告警、云端备份成为高端化与订阅化抓手。</span>
           </div>
           <div class="kpi">
-            <small>NPS 区间</small>
-            <strong><span data-count="37">37</span>-<span data-count="55">55</span></strong>
-            <span>整体良好到优秀，印度是提升空间最大的国家。</span>
+            <strong>Wi-Fi 6</strong>
+            <span>大文件下载速度被反复提及，直接影响事故后取证效率。</span>
           </div>
           <div class="kpi">
-            <small>共性体验痛点</small>
-            <strong data-count="3">3</strong>
-            <span>APP 连接、4G/GPS 稳定、高温发热/关机。</span>
+            <strong>AI</strong>
+            <span>AI运动检测、驾驶辅助、车牌/路牌增强更多出现在旗舰叙事中。</span>
           </div>
         </div>
 
-        <div class="insight-grid">
+        <div class="insight-grid" style="margin-top:14px;">
           <article class="insight">
-            <span class="tag">用户画像</span>
-            <h3>30-50 岁男性车主是核心基本盘</h3>
-            <p>多数国家以 SUV 车主为主，马来西亚轿车占比更突出。安全取证需求强，说明产品体验必须围绕“关键时刻可信赖”来叙事和验证。</p>
+            <span class="tag green">核心判断 01</span>
+            <h3>“画质领先”正在变成入场券，App 证据链才是差异化空间。</h3>
+            <p>VIOFO、70mai、DDPAI 等都在强调 4K、多通道、夜视和高速下载。设计侧更值得追问：用户如何最快找到关键片段、确认有效证据、完成导出与分享。</p>
           </article>
           <article class="insight">
-            <span class="tag">购买旅程</span>
-            <h3>线上种草到电商成交已经定型</h3>
-            <p>社媒、YouTube、TikTok、KOL 测评、用户评价共同构成决策链路。体验内容需要从参数展示转向真实场景证明。</p>
+            <span class="tag amber">核心判断 02</span>
+            <h3>高端竞品把车辆从“录制设备”包装成“远程安防终端”。</h3>
+            <p>Nextbase iQ、BlackVue、70mai 4G方案、DDPAI 4G模块都在扩展远程查看、停车守护和事件通知，体验挑战是告警可信度、弱网反馈和订阅价值解释。</p>
           </article>
           <article class="insight">
-            <span class="tag">品牌关系</span>
-            <h3>科技与性价比认知清晰，独立性仍需补课</h3>
-            <p>70mai 在多国拥有科技和性价比双重心智，但泰国、印尼、越南、印度仍存在小米强联想，影响独立品牌资产沉淀。</p>
+            <span class="tag blue">核心判断 03</span>
+            <h3>专业功能需要分层，否则容易把普通用户推向“不会用”。</h3>
+            <p>VIOFO 的参数自定义、海康的事件检索、多镜头产品的角度管理都很强，但需要默认策略、解释文案和高级入口分层承接。</p>
           </article>
         </div>
       </section>
 
-      <section id="compare">
+      <section id="landscape">
         <div class="section-head">
-          <h2>国家对比：忠诚度不错，满意度还没有追上口碑。</h2>
-          <p>NPS 高于满意度观感，意味着用户愿意推荐品牌，但产品日常体验仍有摩擦。体验设计应优先缩短“连接-查看-取证”的时间成本。</p>
+          <div>
+            <h2>品牌格局</h2>
+          </div>
+          <p class="section-note">按公开资料与已收集信息，将竞品暂分为四类：大众消费、专业影像、云端安防、区域/生态型品牌。</p>
         </div>
 
-        <div class="dashboard">
-          <div class="panel">
-            <h3>NPS 对比</h3>
-            <div class="bar-list" id="npsBars"></div>
-          </div>
-          <div class="panel">
-            <h3>样本结构</h3>
-            <div class="sample-grid" id="sampleGrid"></div>
-          </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>代表品牌</th>
+                <th>核心卖点</th>
+                <th>体验风险</th>
+                <th>对 70迈的观察价值</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>大众智能消费型</td>
+                <td>70mai、360、盯盯拍、凌度</td>
+                <td>价格覆盖广、连接和回放高频、适合家庭车主</td>
+                <td>连接失败、下载慢、运营/广告干扰会被用户强感知</td>
+                <td>打磨基础链路和默认易用性，避免高端功能掩盖核心任务</td>
+              </tr>
+              <tr>
+                <td>专业影像/玩家型</td>
+                <td>VIOFO、Vantrue</td>
+                <td>多通道、高清、高码率、专业参数、夜视能力</td>
+                <td>安装复杂、设置复杂、普通用户难判断参数意义</td>
+                <td>把专业能力翻译成“推荐模式”和场景化配置</td>
+              </tr>
+              <tr>
+                <td>云端安防/订阅型</td>
+                <td>BlackVue、Nextbase</td>
+                <td>远程实时查看、云备份、停车安防、订阅服务</td>
+                <td>订阅门槛、国内服务可用性、隐私信任</td>
+                <td>学习订阅价值表达和事件告警闭环，同时控制复杂度</td>
+              </tr>
+              <tr>
+                <td>区域/生态型</td>
+                <td>Garmin、Mio、Papago、Vietmap、Qubo、海康威视</td>
+                <td>导航/运动/安防/IoT生态、本地市场渠道</td>
+                <td>跨区域本地化、生态割裂、产品线复杂</td>
+                <td>寻找跨设备联动、车队/专业检索、本地化服务的可借鉴点</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section id="country">
+      <section id="matrix">
         <div class="section-head">
-          <h2>国家画像：同一套底层需求，不同市场需要不同打法。</h2>
-          <p>点击国家查看核心用户、竞品、触达渠道和体验机会。这里保留了体验复盘最需要的粒度，适合会议中快速横向切换。</p>
+          <div>
+            <h2>体验矩阵</h2>
+          </div>
+          <p class="section-note">评分为研究侧启发性判断，基于公开评测、官网/发布信息和原始资料，不等同于严谨量化测评。</p>
         </div>
 
-        <div class="tabs" role="tablist" aria-label="选择国家" id="countryTabs"></div>
-        <div class="country-layout">
-          <article class="country-detail" id="countryDetail"></article>
-          <div class="panel">
-            <h3>典型购买路径</h3>
-            <div class="journey">
-              <div class="journey-step"><small>1</small><b>内容种草</b><span id="journeyAwareness"></span></div>
-              <div class="journey-step"><small>2</small><b>主动搜索</b><span>搜索产品信息、参数、安装和售后内容。</span></div>
-              <div class="journey-step"><small>3</small><b>横向验证</b><span id="journeyCompare"></span></div>
-              <div class="journey-step"><small>4</small><b>电商成交</b><span>在价格、套装、评价和官方可信度之间做最终权衡。</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>品牌</th>
+                <th>连接/下载</th>
+                <th>视频管理</th>
+                <th>远程/云</th>
+                <th>停车守护</th>
+                <th>专业参数</th>
+                <th>本地化/易用</th>
+                <th>重点结论</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>70mai</td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td>T800/4K Omni 的公开评测强调三路/360°、Wi-Fi 6、App 管理和停车守护，适合继续强化“影像 + 守护 + 易用”。</td>
+              </tr>
+              <tr>
+                <td>盯盯拍</td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td>Z90 Master 公开报道强调 4K+4K+3K、5GHz Wi-Fi、可选 4G、雷达停车监控，硬件叙事很强。</td>
+              </tr>
+              <tr>
+                <td>BlackVue</td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td>品牌心智偏云端安防和高端记录仪，适合重点研究远程查看、云存储、事件通知的订阅闭环。</td>
+              </tr>
+              <tr>
+                <td>VIOFO</td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s2">2</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s3">3</span></td>
+                <td>A329/A329S 在评测中被反复称赞影像和可调参数，App 功能强但视觉与入门友好度不是最强项。</td>
+              </tr>
+              <tr>
+                <td>Nextbase</td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s5">5</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td>iQ 将 4G、Witness Mode、Guardian Mode、云存储和订阅打包成高端安全服务，但价格和订阅感知是门槛。</td>
+              </tr>
+              <tr>
+                <td>Garmin</td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s2">2</span></td>
+                <td><span class="score s4">4</span></td>
+                <td>更像“可靠硬件 + 生态设备”的路线，Mini 系列偏极简，dēzl DualView 则扩展到商用车盲区安全。</td>
+              </tr>
+              <tr>
+                <td>Vantrue</td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s2">2</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s4">4</span></td>
+                <td><span class="score s3">3</span></td>
+                <td>Pilot 2 把热成像、CarPlay/Android Auto 和多摄像头整合到屏幕中，像“老车智能座舱升级包”。</td>
+              </tr>
+              <tr>
+                <td>360 / 凌度 / Papago / Mio</td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s2">2</span></td>
+                <td><span class="score s3">3</span></td>
+                <td><span class="score s2">2</span></td>
+                <td><span class="score s3">3</span></td>
+                <td>更多承担价格带、区域市场和基础易用对比价值，需要继续补充真实 App 截图和商店评论。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="brands">
+        <div class="section-head">
+          <div>
+            <h2>品牌卡片</h2>
+          </div>
+          <p class="section-note">每张卡片只保留对体验研究有帮助的信息，避免变成产品参数堆积。</p>
+        </div>
+
+        <div class="brand-grid">
+          <a class="brand-card" href="https://www.70mai.com/us/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:var(--green);">70</div>
+                <div>
+                  <h3>70mai</h3>
+                  <div class="brand-meta">内部基准 · 全球消费级智能记录仪</div>
+                </div>
+              </div>
+              <span class="tag green">基准</span>
             </div>
-            <div style="margin-top:20px">
-              <h3>选择因素 Top 3</h3>
-              <div class="bar-list" id="factorBars"></div>
+            <p>公开评测显示，4K T800 与 4K Omni 把多路高清、旋转/多角度覆盖、Wi-Fi 6、停车守护和 App 管理作为核心卖点。设计上可继续放大“高规格但不难用”的优势。</p>
+            <div class="chips">
+              <span class="chip">三路/360°覆盖</span><span class="chip">Wi-Fi 6</span><span class="chip">停车守护</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.ddpai.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:var(--teal);">D</div>
+                <div>
+                  <h3>盯盯拍 DDPAI</h3>
+                  <div class="brand-meta">中国深圳 · 硬件规格叙事强</div>
+                </div>
+              </div>
+              <span class="tag blue">强硬件</span>
+            </div>
+            <p>Z90 Master 公开报道强调 4K 前后 + 3K 车内、内置 eMMC + microSD、5GHz Wi-Fi、可选 4G、雷达停车监控。体验研究应关注多通道低延迟切换与远程告警闭环。</p>
+            <div class="chips">
+              <span class="chip">4K+4K+3K</span><span class="chip">可选4G</span><span class="chip">雷达停车</span><span class="chip">双存储</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://blackvue.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#111827;">B</div>
+                <div>
+                  <h3>BlackVue</h3>
+                  <div class="brand-meta">韩国 · 云端安防心智</div>
+                </div>
+              </div>
+              <span class="tag violet">云服务</span>
+            </div>
+            <p>BlackVue 在海外市场形成“Cloud + 高端记录仪”的心智，适合作为云端远程查看、停车事件通知、证据云备份和订阅权益分层的参考对象。</p>
+            <div class="chips">
+              <span class="chip">Cloud</span><span class="chip">远程查看</span><span class="chip">停车事件</span><span class="chip">订阅服务</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.viofo.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:var(--amber);">V</div>
+                <div>
+                  <h3>VIOFO</h3>
+                  <div class="brand-meta">中国深圳 · 专业影像玩家型</div>
+                </div>
+              </div>
+              <span class="tag amber">专业</span>
+            </div>
+            <p>A329/A329S 在公开评测中主打 4K 60fps、Sony STARVIS、Wi-Fi 6、SSD 扩展和大量参数设置。其价值在影像和可控性，风险在界面精致度与新手门槛。</p>
+            <div class="chips">
+              <span class="chip">4K 60fps</span><span class="chip">Wi-Fi 6</span><span class="chip">SSD扩展</span><span class="chip">高级参数</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.nextbase.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:var(--red);">N</div>
+                <div>
+                  <h3>Nextbase</h3>
+                  <div class="brand-meta">英国 · 智能安防订阅型</div>
+                </div>
+              </div>
+              <span class="tag red">订阅</span>
+            </div>
+            <p>Nextbase iQ 将 4G、Witness Mode、Guardian Mode、远程告警、云存储和 Emergency SOS 组合成高端守护服务。可重点研究“免费能力 vs 付费能力”的价值边界。</p>
+            <div class="chips">
+              <span class="chip">4G</span><span class="chip">Witness Mode</span><span class="chip">Guardian Mode</span><span class="chip">Emergency SOS</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.garmin.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:var(--blue);">G</div>
+                <div>
+                  <h3>Garmin</h3>
+                  <div class="brand-meta">美国 · 设备生态与可靠性</div>
+                </div>
+              </div>
+              <span class="tag blue">生态</span>
+            </div>
+            <p>Garmin Mini 系列偏极简安装和基础记录，dēzl DualView 扩展到商用车盲区安全。设计借鉴点是可靠硬件、低干扰和车载生态一致性。</p>
+            <div class="chips">
+              <span class="chip">极简硬件</span><span class="chip">Vault</span><span class="chip">商用车盲区</span><span class="chip">生态设备</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.vantrue.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#8b5cf6;">V</div>
+                <div>
+                  <h3>Vantrue</h3>
+                  <div class="brand-meta">中国深圳 · 多摄像头与座舱升级</div>
+                </div>
+              </div>
+              <span class="tag violet">创新</span>
+            </div>
+            <p>Pilot 2 把热成像、6.25 英寸屏、CarPlay/Android Auto、多路摄像头和语音控制整合在一起，更接近“给老车增加智能座舱能力”。</p>
+            <div class="chips">
+              <span class="chip">热成像</span><span class="chip">CarPlay</span><span class="chip">Android Auto</span><span class="chip">多路摄像</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://life.360.cn/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#525252;">360</div>
+                <div>
+                  <h3>360行车记录仪</h3>
+                  <div class="brand-meta">中国北京 · 大众消费与安全生态</div>
+                </div>
+              </div>
+              <span class="tag">大众</span>
+            </div>
+            <p>适合观察国内大众用户对“连接快、界面简单、视频时间轴清楚、云存储付费说明”的接受度，也适合作为中低价位体验底线参考。</p>
+            <div class="chips">
+              <span class="chip">5GHz Wi-Fi</span><span class="chip">时间轴</span><span class="chip">云存储</span><span class="chip">国内服务</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.hikvision.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#991b1b;">H</div>
+                <div>
+                  <h3>海康威视 HIKVISION</h3>
+                  <div class="brand-meta">中国杭州 · 专业安防与车队管理</div>
+                </div>
+              </div>
+              <span class="tag red">专业</span>
+            </div>
+            <p>更适合研究多设备、事件检索、车队管理和安全行业的信息架构。对消费级产品的借鉴应谨慎，重点看“复杂信息如何被检索”。</p>
+            <div class="chips">
+              <span class="chip">事件检索</span><span class="chip">多设备</span><span class="chip">车队</span><span class="chip">专业后台</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.sz-lndu.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#374151;">L</div>
+                <div>
+                  <h3>凌度 BLACKVIEW</h3>
+                  <div class="brand-meta">中国深圳 · 基础易用与性价比</div>
+                </div>
+              </div>
+              <span class="tag">基础</span>
+            </div>
+            <p>适合作为低学习成本样本：离线查看、TF卡内容、基础录制、微信分享等链路是否足够直接。短板多在导出速度、分享画质和云服务缺失。</p>
+            <div class="chips">
+              <span class="chip">基础易用</span><span class="chip">TF卡</span><span class="chip">导出</span><span class="chip">分享</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.papago.com.cn/NewWebsite/index.php?type=" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#166534;">P</div>
+                <div>
+                  <h3>Papago 趴趴狗</h3>
+                  <div class="brand-meta">中国台湾 · 导航与记录仪老牌</div>
+                </div>
+              </div>
+              <span class="tag green">区域</span>
+            </div>
+            <p>适合观察停车监控、电量提醒、离线地图和固件升级路径。老牌产品常见问题是 UI 风格过时、操作卡顿和更新链路较重。</p>
+            <div class="chips">
+              <span class="chip">离线地图</span><span class="chip">停车监控</span><span class="chip">电量提醒</span><span class="chip">固件更新</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.mio.com/zh_cn/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#0f766e;">M</div>
+                <div>
+                  <h3>Mio</h3>
+                  <div class="brand-meta">中国台湾 · 隐私与驾驶报告</div>
+                </div>
+              </div>
+              <span class="tag blue">报告</span>
+            </div>
+            <p>可重点观察驾驶报告如何把行程、速度、风险和驾驶行为转化为用户能理解的反馈；连接速度和本地化体验仍需实测验证。</p>
+            <div class="chips">
+              <span class="chip">驾驶报告</span><span class="chip">隐私</span><span class="chip">连接速度</span><span class="chip">本地化</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://vietmap.vn/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#dc2626;">VI</div>
+                <div>
+                  <h3>Vietmap</h3>
+                  <div class="brand-meta">越南 · 地图与本地驾驶服务</div>
+                </div>
+              </div>
+              <span class="tag red">本地化</span>
+            </div>
+            <p>适合补充东南亚市场视角，重点关注地图、语音、路况、导航和售后等本地化能力如何与记录仪结合。</p>
+            <div class="chips">
+              <span class="chip">地图</span><span class="chip">东南亚</span><span class="chip">导航服务</span><span class="chip">待实测</span>
+            </div>
+          </a>
+
+          <a class="brand-card" href="https://www.quboworld.com/" target="_blank" rel="noreferrer">
+            <div class="brand-top">
+              <div class="brand-name">
+                <div class="logo" style="background:#2563eb;">Q</div>
+                <div>
+                  <h3>Qubo</h3>
+                  <div class="brand-meta">印度 · IoT生态与安防延展</div>
+                </div>
+              </div>
+              <span class="tag blue">IoT</span>
+            </div>
+            <p>适合研究记录仪如何并入智能家居/安防生态。后续需补充印度市场 App 语言、本地服务、客服和电商评论样本。</p>
+            <div class="chips">
+              <span class="chip">IoT</span><span class="chip">安防</span><span class="chip">印度市场</span><span class="chip">待补充</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section id="journey">
+        <div class="section-head">
+          <div>
+            <h2>关键链路</h2>
+          </div>
+          <p class="section-note">记录仪 App 的体验胜负通常不在功能列表，而在用户急用时能否完成闭环。</p>
+        </div>
+
+        <div class="journey">
+          <article class="step">
+            <div class="step-num">1</div>
+            <h3>连接设备</h3>
+            <p>蓝牙/Wi-Fi/4G 状态需要可解释，失败原因、重试方式、权限缺失要直接给出。</p>
+          </article>
+          <article class="step">
+            <div class="step-num">2</div>
+            <h3>查看实时画面</h3>
+            <p>多镜头命名、角度调整、弱网延迟、横竖屏和驾驶中低干扰是核心。</p>
+          </article>
+          <article class="step">
+            <div class="step-num">3</div>
+            <h3>定位关键片段</h3>
+            <p>时间轴、事件标签、停车/碰撞/手动标记、缩略图筛选决定找证据效率。</p>
+          </article>
+          <article class="step">
+            <div class="step-num">4</div>
+            <h3>下载与分享</h3>
+            <p>Wi-Fi 6、高速下载、后台任务、失败恢复、导出画质说明会显著影响信任。</p>
+          </article>
+          <article class="step">
+            <div class="step-num">5</div>
+            <h3>长期守护</h3>
+            <p>停车监控、电量保护、远程告警、云备份、订阅权益要形成可感知价值。</p>
+          </article>
+        </div>
+
+        <div class="bars">
+          <div class="bar-row">
+            <span>事故取证刚需</span>
+            <div class="track"><div class="fill" style="width:96%;"></div></div>
+            <strong>高</strong>
+          </div>
+          <div class="bar-row">
+            <span>停车安防感知</span>
+            <div class="track"><div class="fill teal" style="width:88%;"></div></div>
+            <strong>高</strong>
+          </div>
+          <div class="bar-row">
+            <span>专业参数需求</span>
+            <div class="track"><div class="fill amber" style="width:56%;"></div></div>
+            <strong>中</strong>
+          </div>
+          <div class="bar-row">
+            <span>社区/内容需求</span>
+            <div class="track"><div class="fill red" style="width:34%;"></div></div>
+            <strong>低</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="opportunities">
+        <div class="section-head">
+          <div>
+            <h2>对 70迈的设计机会</h2>
+          </div>
+          <p class="section-note">以下为基于公开资料的设计推断，建议后续用竞品 App 实测和用户访谈验证。</p>
+        </div>
+
+        <div class="ai-panel">
+          <div>
+            <span class="tag green">AI 机会</span>
+            <h3>把 AI 从“卖点词”变成可被用户信任的车载助手。</h3>
+            <p>70mai 已有 AI Motion Detection、ADAS 等基础能力。下一步更大的体验空间，是让 AI 进入售后、报告、检测、告警和证据整理，帮用户减少查找、判断和求助成本。</p>
+          </div>
+          <div class="ai-grid">
+            <div class="ai-item">
+              <strong>AI客服 / 设备诊断</strong>
+              <span>围绕连接失败、固件升级、存储卡异常、停车监控不可用等高频问题，自动读取设备状态并给出步骤化解决方案。</span>
+            </div>
+            <div class="ai-item">
+              <strong>AI行车报告</strong>
+              <span>从行程、急刹、急加速、夜间驾驶、停车异常中生成周/月报告，用“风险解释 + 改善建议”替代单纯数据罗列。</span>
+            </div>
+            <div class="ai-item">
+              <strong>AI驾驶检测</strong>
+              <span>面向疲劳、分心、跟车过近、前车起步、行人/非机动车风险，提供低打扰提醒和可回看证据片段。</span>
+            </div>
+            <div class="ai-item">
+              <strong>AI证据摘要</strong>
+              <span>事故后自动剪出关键 30-90 秒，生成时间、地点、速度、碰撞、前后车牌清晰度等摘要，方便保险和交警沟通。</span>
+            </div>
+            <div class="ai-item">
+              <strong>AI告警降噪</strong>
+              <span>对停车监控误报、树影、人经过、雨雪等场景建立忽略规则，给用户“为什么提醒我”的可解释反馈。</span>
+            </div>
+            <div class="ai-item">
+              <strong>AI内容检索</strong>
+              <span>支持按“昨晚停车被碰”“找高速入口那段”“有行人横穿的视频”等自然语言搜索历史片段。</span>
             </div>
           </div>
         </div>
+
+        <div class="opportunity-grid">
+          <article class="opportunity">
+            <span class="tag green">机会 01</span>
+            <h3>把“找证据”做成一条高确定性的主路径。</h3>
+            <p>围绕事故后场景优化：自动定位疑似片段、保留前后文、快速预览车牌清晰度、无损/压缩分享选择、导出失败恢复。</p>
+            <span class="priority">优先级 P0</span>
+          </article>
+          <article class="opportunity">
+            <span class="tag blue">机会 02</span>
+            <h3>连接失败从“报错”升级为“诊断”。</h3>
+            <p>将权限、Wi-Fi、蓝牙、设备供电、距离、车型兼容等问题拆成可操作的诊断卡片，降低客服压力和差评概率。</p>
+            <span class="priority">优先级 P0</span>
+          </article>
+          <article class="opportunity">
+            <span class="tag amber">机会 03</span>
+            <h3>远程守护需要有“可信告警”设计。</h3>
+            <p>对 AI 运动检测、碰撞提醒、停车监控做置信度、证据预览、忽略规则和误报学习，避免用户被通知疲劳打败。</p>
+            <span class="priority">优先级 P1</span>
+          </article>
+          <article class="opportunity">
+            <span class="tag violet">机会 04</span>
+            <h3>高级设置用“推荐方案”承接，而不是直接堆参数。</h3>
+            <p>把码率、HDR、夜视、碰撞灵敏度、停车模式包装成“城市通勤 / 长途高速 / 夜间停车 / 省电守护”等模式。</p>
+            <span class="priority">优先级 P1</span>
+          </article>
+          <article class="opportunity">
+            <span class="tag red">机会 05</span>
+            <h3>订阅/付费能力要先解释安全价值，再解释权益列表。</h3>
+            <p>Nextbase 等竞品显示订阅会带来门槛。70迈若推进云服务，应避免只讲容量和套餐，需讲清“什么风险被解决”。</p>
+            <span class="priority">优先级 P2</span>
+          </article>
+          <article class="opportunity">
+            <span class="tag">机会 06</span>
+            <h3>建立竞品截图墙和任务评分表。</h3>
+            <p>按连接、实时预览、回放、下载、分享、停车监控、设置、会员/云服务八个页面收集截图与录屏，并按任务耗时、失败提示、入口清晰度、情绪负担打分。</p>
+            <span class="priority">优先级 P2</span>
+          </article>
+        </div>
       </section>
 
-      <section id="pain">
+      <section id="screenshot-plan">
         <div class="section-head">
-          <h2>痛点矩阵：跨国共性问题应进入产品体验主线。</h2>
-          <p>颜色越深表示越应优先处理。APP 连接、远程/GPS、高温可靠性不是单点投诉，而是横跨多国的体验风险。</p>
+          <div>
+            <h2>竞品截图墙与任务评分表</h2>
+          </div>
+          <p class="section-note">建议每个品牌至少选择 1 款代表机型，按相同任务录屏，避免只比较静态页面好不好看。</p>
         </div>
 
-        <div class="panel matrix" aria-label="痛点与国家矩阵">
-          <div class="matrix-row">
-            <div class="matrix-cell head">痛点</div>
-            <div class="matrix-cell head">马来西亚</div>
-            <div class="matrix-cell head">泰国</div>
-            <div class="matrix-cell head">印尼</div>
-            <div class="matrix-cell head">越南</div>
-            <div class="matrix-cell head">印度</div>
-            <div class="matrix-cell head">菲律宾</div>
-          </div>
-          <div class="matrix-row">
-            <div class="matrix-cell head">APP / Wi-Fi 连接</div>
-            <div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div>
-          </div>
-          <div class="matrix-row">
-            <div class="matrix-cell head">4G / GPS / 远程查看</div>
-            <div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
-          </div>
-          <div class="matrix-row">
-            <div class="matrix-cell head">高温 / 发热 / 关机</div>
-            <div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
-          </div>
-          <div class="matrix-row">
-            <div class="matrix-cell head">本地化语言 / ADAS</div>
-            <div class="matrix-cell">低</div><div class="matrix-cell warm">中</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div><div class="matrix-cell warm">中</div>
-          </div>
-          <div class="matrix-row">
-            <div class="matrix-cell head">线下门店 / 售后</div>
-            <div class="matrix-cell warm">中</div><div class="matrix-cell">低</div><div class="matrix-cell hot">高</div><div class="matrix-cell">低</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
-          </div>
-          <div class="matrix-row">
-            <div class="matrix-cell head">套装 / 配件 / 价格</div>
-            <div class="matrix-cell warm">中</div><div class="matrix-cell warm">中</div><div class="matrix-cell warm">中</div><div class="matrix-cell hot">高</div><div class="matrix-cell hot">高</div><div class="matrix-cell warm">中</div>
-          </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>页面/任务</th>
+                <th>必须收集的截图/录屏</th>
+                <th>评分维度</th>
+                <th>重点观察问题</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>连接</td>
+                <td>首次配对、再次连接、权限弹窗、失败页、重连页</td>
+                <td>入口清晰度、步骤数量、失败可恢复性、状态解释</td>
+                <td>用户是否知道正在连什么、为什么失败、下一步做什么。</td>
+              </tr>
+              <tr>
+                <td>实时预览</td>
+                <td>单镜头预览、多镜头切换、横屏、弱网/离线、拍照/录制按钮</td>
+                <td>启动速度、画面稳定、镜头命名、驾驶中低打扰</td>
+                <td>多镜头产品是否能快速判断“我现在看的是什么角度”。</td>
+              </tr>
+              <tr>
+                <td>回放</td>
+                <td>视频列表、时间轴、事件标签、缩略图、筛选、地图轨迹</td>
+                <td>定位效率、事件可信度、信息密度、误触成本</td>
+                <td>用户能否在 30 秒内找到想要的事故/停车片段。</td>
+              </tr>
+              <tr>
+                <td>下载</td>
+                <td>选择片段、下载进度、后台下载、失败恢复、存储不足提示</td>
+                <td>速度感知、进度反馈、可中断性、异常提示</td>
+                <td>大文件下载是否让用户安心等待，失败后是否能继续。</td>
+              </tr>
+              <tr>
+                <td>分享</td>
+                <td>裁剪、清晰度选择、隐私遮挡、微信/相册/云链接分享</td>
+                <td>画质控制、隐私保护、分享路径、格式兼容</td>
+                <td>事故证据和日常内容分享是否被同一套流程粗暴处理。</td>
+              </tr>
+              <tr>
+                <td>停车监控</td>
+                <td>开关设置、低电保护、告警列表、远程推送、误报处理</td>
+                <td>安全感、可解释性、提醒频率、误报控制</td>
+                <td>用户是否相信告警，是否知道车被触发时发生了什么。</td>
+              </tr>
+              <tr>
+                <td>设置</td>
+                <td>录像参数、碰撞灵敏度、HDR/夜视、语音、固件升级</td>
+                <td>默认值合理性、术语解释、推荐模式、升级安心感</td>
+                <td>普通用户是否能在不懂参数的情况下做对选择。</td>
+              </tr>
+              <tr>
+                <td>会员/云服务</td>
+                <td>套餐页、权益说明、免费限制、订阅弹窗、取消路径</td>
+                <td>价值表达、透明度、打扰程度、信任感</td>
+                <td>用户看到的是“被收费”，还是“重要风险被解决”。</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section id="actions">
+      <section id="sources">
         <div class="section-head">
-          <h2>体验机会：把品牌优势翻译成可被验证的体验承诺。</h2>
-          <p>以下建议按体验设计师可推动的范围拆解：产品交互、用研验证、内容触点、服务闭环。目标是让“安全可信赖”从口号变成可感知的使用体验。</p>
+          <div>
+            <h2>资料来源</h2>
+          </div>
+          <p class="section-note">本报告引用公开网页信息，并结合你已收集的品牌汇总文档进行结构化整理。品牌官网和 App 商店评价仍建议补充实测验证。</p>
         </div>
 
-        <div class="action-grid">
-          <article class="action-card">
-            <span class="priority">P0 / Product UX</span>
-            <h3>重做连接与取证关键路径</h3>
-            <p>围绕“连接设备、查看录像、下载证据、远程看车”建立任务漏斗。优先降低 Wi-Fi 切换、Android Auto/车机冲突、离线查看和下载卡顿造成的中断。</p>
-          </article>
-          <article class="action-card">
-            <span class="priority">P0 / Reliability</span>
-            <h3>建立高温与网络稳定性的体验验收标准</h3>
-            <p>把热关机、4G 掉线、GPS 漂移、远程看车失败转化为可复现测试场景，并在营销内容中呈现“热带/高温/弱网”真实验证。</p>
-          </article>
-          <article class="action-card">
-            <span class="priority">P1 / Localization</span>
-            <h3>做本地化语音与 ADAS 提示专项</h3>
-            <p>越南语、马来语等语音提示要从翻译升级为场景化可懂。印尼摩托车密集路况下，ADAS 应支持更细颗粒度的静音、频率和误报控制。</p>
-          </article>
-          <article class="action-card">
-            <span class="priority">P1 / Growth</span>
-            <h3>把 KOL 测评内容改成体验证明</h3>
-            <p>YouTube、TikTok、Facebook/Instagram 是关键入口。内容重点从参数罗列转向夜视、停车监控、远程查看、高温稳定、事故取证等任务表现。</p>
-          </article>
-          <article class="action-card">
-            <span class="priority">P1 / Service</span>
-            <h3>补齐线下安装、售后与正品验证</h3>
-            <p>马来西亚、印尼、印度、菲律宾均出现线下支持诉求。可设计门店/安装点查询、保修状态、配件购买、正品验证的一体化服务入口。</p>
-          </article>
-          <article class="action-card">
-            <span class="priority">P2 / Portfolio</span>
-            <h3>按国家拆产品线机会</h3>
-            <p>马来西亚关注摩托车记录仪；越南和菲律宾期待 360°、车机互联和夜视；印度需要更强散热、电池安全和价格友好套装。</p>
-          </article>
+        <div class="source-list">
+          <a class="source" href="https://www.70mai.com/us/t800/" target="_blank" rel="noreferrer">
+            <strong>70mai: Dash Cam 4K T800</strong>
+            <small>官方资料，用于核对 AI Motion Detection、4G Hardwire Kit、App Live Streaming、三通道停车守护等功能描述。</small>
+          </a>
+          <a class="source" href="https://www.ddpai.com/dash-cams/z90-series/" target="_blank" rel="noreferrer">
+            <strong>DDPAI: Z90 Master 3CH 4K Dash Cam</strong>
+            <small>官方资料，用于核对 4K+4K+3K、AI Interior Camera、24/7 3CH Parking Monitoring、4G Remote Control、5GHz Wi-Fi 等信息。</small>
+          </a>
+          <a class="source" href="https://blackvue.com/pages/cloud" target="_blank" rel="noreferrer">
+            <strong>BlackVue: Cloud Service</strong>
+            <small>官方资料，用于核对 Instant impact notifications、Auto backup of Event videos、Remote Live View 等云服务能力。</small>
+          </a>
+          <a class="source" href="https://nextbase.com/smart-dash-cams/iq-smart-dash-cam/" target="_blank" rel="noreferrer">
+            <strong>Nextbase: iQ Smart Dash Cam</strong>
+            <small>官方资料，用于核对 Live View、Witness Mode、Guardian Mode、SmartSense Parking、订阅权益等信息。</small>
+          </a>
+          <a class="source" href="https://support.garmin.com/en-US/?faq=NSiiTiuHqO6INTTypUw2z6" target="_blank" rel="noreferrer">
+            <strong>Garmin Support: Vault Storage</strong>
+            <small>官方支持资料，用于核对 Garmin Vault 在线视频存储和 Garmin Drive/dēzl App 访问路径。</small>
+          </a>
+          <a class="source" href="https://support.garmin.com/en-US/?faq=jFiexZvp1y9Mqvrj5MwCg9" target="_blank" rel="noreferrer">
+            <strong>Garmin Support: Remote Access and Live View</strong>
+            <small>官方支持资料，用于核对 Garmin Dash Cam Live 通过 Garmin Drive App 远程访问和实时查看能力。</small>
+          </a>
+          <a class="source" href="https://www.vantrue.com/products/pilot-2" target="_blank" rel="noreferrer">
+            <strong>Vantrue: Pilot 2 Thermal Smart Dash Cam</strong>
+            <small>官方资料，用于核对热成像、AI Detection Distance、CarPlay / Android Auto、6.25 英寸屏、多路保护等信息。</small>
+          </a>
+          <a class="source" href="https://www.techradar.com/vehicle-tech/dash-cams/the-best-dash-cams" target="_blank" rel="noreferrer">
+            <strong>TechRadar: The best dash cam 2026</strong>
+            <small>用于了解 2026 年横评格局、VIOFO A329、Nextbase iQ、70mai 4K Omni、Garmin Mini 3 等定位。</small>
+          </a>
+          <a class="source" href="https://www.techradar.com/vehicle-tech/dash-cams/70mai-dash-cam-4k-t800-review" target="_blank" rel="noreferrer">
+            <strong>TechRadar: 70mai Dash Cam 4K T800 review</strong>
+            <small>用于补充 70mai T800 的三摄、Wi-Fi 6、App 管理、夜视和停车守护体验信息。</small>
+          </a>
+          <a class="source" href="https://www.thesun.ie/motors/15852615/new-70mai-4k-t800-dash-camera/" target="_blank" rel="noreferrer">
+            <strong>The Sun: 70mai 4K T800 launch coverage</strong>
+            <small>用于补充 4G hardwire kit、App Live Streaming、AI motion detection、Wi-Fi 6 与存储信息。</small>
+          </a>
+          <a class="source" href="https://www.digitalcameraworld.com/cameras/dash-cams/world-first-ddpai-launches-new-dash-cam-with-4k-front-4k-rear-and-3k-cabin-cameras" target="_blank" rel="noreferrer">
+            <strong>Digital Camera World: DDPAI Z90 Master</strong>
+            <small>用于补充 DDPAI 三摄规格、5GHz Wi-Fi、可选 4G、雷达停车监控与双存储信息。</small>
+          </a>
+          <a class="source" href="https://www.lifewire.com/nextbase-iq-dashcam-hands-on-8557409" target="_blank" rel="noreferrer">
+            <strong>Lifewire: Nextbase iQ hands-on</strong>
+            <small>用于补充 Nextbase iQ 的 4G、Witness Mode、Guardian Mode、订阅与云服务信息。</small>
+          </a>
+          <a class="source" href="https://www.tomsguide.com/vehicle-tech/the-viofo-a329s-is-an-outstanding-dash-cam-with-fantastic-video-quality-but-the-price-is-a-big-hurdle" target="_blank" rel="noreferrer">
+            <strong>Tom's Guide: VIOFO A329S review</strong>
+            <small>用于补充 VIOFO 的影像、Wi-Fi、参数自定义、停车模式与 App 体验判断。</small>
+          </a>
+          <a class="source" href="https://www.techradar.com/vehicle-tech/dash-cams/vantrue-pilot-2-dash-cam-review" target="_blank" rel="noreferrer">
+            <strong>TechRadar: Vantrue Pilot 2 review</strong>
+            <small>用于补充 Vantrue 热成像、CarPlay/Android Auto、触屏与多摄像头定位。</small>
+          </a>
+          <a class="source" href="https://www.techradar.com/vehicle-tech/dash-cams/garmin-unveils-a-new-rugged-cam-designed-to-cover-blind-spots-and-its-the-safety-device-truck-drivers-need" target="_blank" rel="noreferrer">
+            <strong>TechRadar: Garmin dēzl DualView</strong>
+            <small>用于补充 Garmin 在商用车盲区安全、Drive App、Vault 订阅方向的信息。</small>
+          </a>
         </div>
 
-        <div class="quote-strip">
-          <blockquote>
-            “优化 APP，让它不管是通过 Wi-Fi 还是 4G 连接记录仪都能更快一些。”
-            <cite>越南用户 · APP 连接与行驶轨迹同步</cite>
-          </blockquote>
-          <blockquote>
-            “4G 和 GPS 信号应该更强一些，经常丢失 GPS 信号，实时画面也很难连接。”
-            <cite>印尼用户 · 远程监控稳定性</cite>
-          </blockquote>
-          <blockquote>
-            “别在行车记录仪里用电池了，改成超级电容吧。机器发热太严重。”
-            <cite>印度用户 · 高温与电池安全</cite>
-          </blockquote>
-        </div>
-      </section>
-
-      <section>
-        <div class="footnote">
-          数据来源：公司《2026东南亚品牌调研问卷报告》Markdown 文件。样本国家包括马来西亚、泰国、越南、印度、印度尼西亚、菲律宾；投放位置为 70mai APP banner；问卷语言覆盖英语、泰语、越南语、马来语、菲律宾语、印尼语。页面中的飞书图片未直接引用，以避免权限和时效问题。
-        </div>
+        <p class="footnote">说明：网页资料的产品信息、价格和功能可能随地区、版本与时间变化；本报告建议作为内部研究初稿，不作为对外发布资料。</p>
       </section>
     </main>
   </div>
-
   <script>
-    const countries = [
-      {
-        id: "my",
-        name: "马来西亚",
-        sample: 187,
-        returned: 248,
-        nps: 54.17,
-        satisfaction: 4.13,
-        safety: 91.13,
-        user: "中年男性轿车车主为主，安全防护动机高度集中。",
-        competitor: "DDPAI 66.99%",
-        channel: "电商平台 29.59%，Facebook/Instagram 18.88%，TikTok 18.37%。",
-        compare: "在线搜索 66.33%，博主测评 57.14%，品牌对比 49.49%。",
-        position: "科技创新、中档为主，近四成用户认为高端。",
-        factors: [["画质", 69.35], ["性价比", 46.77], ["功能", 45.16]],
-        opportunities: ["APP 连接", "4G/GPS 稳定", "耐高温", "以旧换新", "摩托车记录仪"]
-      },
-      {
-        id: "th",
-        name: "泰国",
-        sample: 116,
-        returned: 180,
-        nps: 55,
-        satisfaction: 4.04,
-        safety: 76.67,
-        user: "30-50 岁男性 SUV 车主，重视性价比和品牌声誉。",
-        competitor: "DDPAI 19.13%，Aston 14.78%，海康 12.17%",
-        channel: "Facebook/Instagram 20.97%，电商 19.35%，TikTok 16.94%。",
-        compare: "博主测评 59.68%，在线搜索 51.61%，品牌对比 38.71%。",
-        position: "科技和性价比双重认知，中端市场为主，仍有小米联想。",
-        factors: [["性价比", 61.11], ["画质", 52.22], ["品牌声誉", 31.67]],
-        opportunities: ["APP 登录/连接", "高温发热", "4G 远程", "疲劳驾驶提醒"]
-      },
-      {
-        id: "id",
-        name: "印度尼西亚",
-        sample: 162,
-        returned: 203,
-        nps: 42,
-        satisfaction: 4.06,
-        safety: 91.63,
-        user: "35-44 岁男性 SUV 车主，基础体验和功能丰富度都重要。",
-        competitor: "DDPAI 最直接，其次 Acroder 16.57%",
-        channel: "YouTube 25.9%，电商 21.69%，Facebook/Instagram 13.25%。",
-        compare: "在线搜索 68.07%，博主测评 66.27%，品牌对比 45.18%。",
-        position: "中档、科技、性价比认知清晰，但小米绑定仍强。",
-        factors: [["画质", 57.14], ["功能", 44.33], ["产品质量", 43.84]],
-        opportunities: ["APP/4G/GPS", "ADAS 误报", "高温", "售后网点", "车机兼容"]
-      },
-      {
-        id: "vn",
-        name: "越南",
-        sample: 530,
-        returned: 753,
-        nps: 48.33,
-        satisfaction: 4.0,
-        safety: 76.49,
-        user: "35-44 岁男性 SUV 车主，品牌知名度对决策影响更高。",
-        competitor: "Vietmap 75.6%，Xiaomi 32.65%",
-        channel: "TikTok 19.56%，他人推荐 13.89%，YouTube 13.53%。",
-        compare: "博主测评 65.45%，在线搜索 45.16%，品牌对比 36.75%。",
-        position: "高品质与科技创新形象突出，中档定位占 64.42%。",
-        factors: [["画质", 47.68], ["品牌知名度", 46.22], ["产品质量", 39.04]],
-        opportunities: ["价格门槛", "越南语/ADAS", "行驶轨迹同步", "360°", "正品验证"]
-      },
-      {
-        id: "in",
-        name: "印度",
-        sample: 361,
-        returned: 450,
-        nps: 37.13,
-        satisfaction: 3.9,
-        safety: 91.11,
-        user: "35-44 岁男性 SUV 车主，价格敏感但对画质期待高。",
-        competitor: "Qubo 35.82%，Redtiger 17.33%，DDPAI 13.86%",
-        channel: "YouTube 38.95%，电商 20%，他人介绍 10.79%。",
-        compare: "在线搜索 56.84%，品牌对比 50.53%，博主测评 45.53%。",
-        position: "高科技创新转型，高端/高档定位更明显，小米联想仍强。",
-        factors: [["画质", 64.22], ["性价比", 38.44], ["产品口碑", 34.22]],
-        opportunities: ["超级电容", "4G 模块", "售后支持", "价格/套装", "盲区广角"]
-      },
-      {
-        id: "ph",
-        name: "菲律宾",
-        sample: 151,
-        returned: 175,
-        nps: 51.29,
-        satisfaction: 4.09,
-        safety: 91.43,
-        user: "35-44 岁男性 SUV 车主，科技感和画质诉求更强。",
-        competitor: "DDPAI 66.67%，海康 13.98%",
-        channel: "Facebook/Instagram 28.03%，电商 26.75%，YouTube 10.19%。",
-        compare: "搜索 65.61%，品牌对比 62.42%，博主测评 61.78%。",
-        position: "高科技创新认知最强，高端/高档定位占 52.15%。",
-        factors: [["画质", 77.14], ["功能", 54.29], ["产品质量", 44]],
-        opportunities: ["夜视/烈日画质", "Wi-Fi 传输", "内存卡 Bug", "车机互联", "防伪验证"]
-      }
-    ];
+    (function () {
+      const layout = document.getElementById('reportLayout');
+      const toggle = document.querySelector('.sidebar-toggle');
+      if (!layout || !toggle) return;
 
-    const palette = ["#1a8a84", "#57a773", "#427aa1", "#e0a526", "#c75b4a", "#7b6fbd"];
-    const npsBars = document.getElementById("npsBars");
-    const sampleGrid = document.getElementById("sampleGrid");
-    const tabs = document.getElementById("countryTabs");
-    const detail = document.getElementById("countryDetail");
-    const factorBars = document.getElementById("factorBars");
-    const journeyAwareness = document.getElementById("journeyAwareness");
-    const journeyCompare = document.getElementById("journeyCompare");
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let revealObserver;
-    let countObserver;
-
-    function barRow(label, value, max, color) {
-      const width = Math.max(2, value / max * 100);
-      const decimals = Number.isInteger(value) ? 0 : 1;
-      return `
-        <div class="bar-row">
-          <span>${label}</span>
-          <div class="bar-track"><div class="bar-fill" style="--value:${width}; --color:${color}"></div></div>
-          <b data-count="${value}" data-decimals="${decimals}">${Number.isInteger(value) ? value : value.toFixed(1)}</b>
-        </div>
-      `;
-    }
-
-    function formatCount(value, decimals = 0, suffix = "") {
-      const fixed = Number(value).toFixed(decimals);
-      const formatted = decimals > 0
-        ? fixed.replace(/\.0$/, "")
-        : Math.round(value).toLocaleString("en-US");
-      return `${formatted}${suffix}`;
-    }
-
-    function setFinalCount(element) {
-      const target = Number(element.dataset.count);
-      const decimals = Number(element.dataset.decimals || 0);
-      const suffix = element.dataset.suffix || "";
-      element.textContent = formatCount(target, decimals, suffix);
-    }
-
-    function animateCount(element) {
-      if (element.dataset.animated === "true") return;
-      element.dataset.animated = "true";
-
-      const target = Number(element.dataset.count);
-      const decimals = Number(element.dataset.decimals || 0);
-      const suffix = element.dataset.suffix || "";
-      const duration = Math.min(1500, Math.max(800, target * 13));
-      const start = performance.now();
-
-      function tick(now) {
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        element.textContent = formatCount(target * eased, decimals, suffix);
-        if (progress < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          setFinalCount(element);
+      const storageKey = 'dashcam-report-sidebar-collapsed';
+      const setCollapsed = (collapsed) => {
+        layout.classList.toggle('is-sidebar-collapsed', collapsed);
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+        toggle.setAttribute('aria-label', collapsed ? '打开边栏' : '关闭边栏');
+        toggle.setAttribute('data-tooltip', collapsed ? '打开边栏' : '关闭边栏');
+        try {
+          localStorage.setItem(storageKey, collapsed ? '1' : '0');
+        } catch (error) {
+          // Local file previews may block storage in some browsers.
         }
+      };
+
+      let saved = '0';
+      try {
+        saved = localStorage.getItem(storageKey) || '0';
+      } catch (error) {
+        saved = '0';
       }
+      setCollapsed(saved === '1');
 
-      element.textContent = formatCount(0, decimals, suffix);
-      requestAnimationFrame(tick);
-    }
+      toggle.addEventListener('click', () => {
+        setCollapsed(!layout.classList.contains('is-sidebar-collapsed'));
+      });
 
-    function setupObservers() {
-      if (reduceMotion) return;
+      const animatedBars = Array.from(document.querySelectorAll('.bars'));
+      if ('IntersectionObserver' in window) {
+        const barObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            barObserver.unobserve(entry.target);
+          });
+        }, { threshold: 0.3 });
 
-      revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          revealObserver.unobserve(entry.target);
+        animatedBars.forEach((barGroup) => {
+          barGroup.classList.add('is-animated');
+          barObserver.observe(barGroup);
         });
-      }, { threshold: .12, rootMargin: "0px 0px -8% 0px" });
-
-      countObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          animateCount(entry.target);
-          countObserver.unobserve(entry.target);
+      } else {
+        animatedBars.forEach((barGroup) => {
+          barGroup.classList.add('is-visible');
         });
-      }, { threshold: .35 });
-    }
-
-    function registerMotion(root = document) {
-      const revealTargets = root.querySelectorAll([
-        ".section-head",
-        ".kpi",
-        ".insight",
-        ".panel",
-        ".sample",
-        ".country-detail",
-        ".journey-step",
-        ".action-card",
-        "blockquote",
-        ".footnote"
-      ].join(","));
-
-      revealTargets.forEach((element, index) => {
-        element.classList.add("reveal");
-        element.style.setProperty("--delay", `${Math.min(index % 6, 5) * 70}ms`);
-        if (reduceMotion) {
-          element.classList.add("is-visible");
-        } else {
-          revealObserver.observe(element);
-        }
-      });
-
-      root.querySelectorAll(".bar-list").forEach((element) => {
-        if (reduceMotion) {
-          element.classList.add("is-visible");
-        } else {
-          revealObserver.observe(element);
-        }
-      });
-
-      root.querySelectorAll("[data-count]").forEach((element) => {
-        element.dataset.animated = "false";
-        if (reduceMotion) {
-          setFinalCount(element);
-        } else {
-          element.textContent = formatCount(0, Number(element.dataset.decimals || 0), element.dataset.suffix || "");
-          countObserver.observe(element);
-        }
-      });
-    }
-
-    function replayDynamicMotion(root) {
-      if (reduceMotion) {
-        registerMotion(root);
-        return;
       }
-      registerMotion(root);
-      requestAnimationFrame(() => {
-        root.querySelectorAll(".bar-list").forEach((element) => {
-          const rect = element.getBoundingClientRect();
-          if (rect.top < window.innerHeight && rect.bottom > 0) {
-            element.classList.add("is-visible");
-          }
-        });
-      });
-    }
-
-    function replayBars(barList) {
-      if (reduceMotion) {
-        barList.classList.add("is-visible");
-        barList.querySelectorAll("[data-count]").forEach(setFinalCount);
-        return;
-      }
-
-      barList.classList.remove("is-visible");
-      barList.querySelectorAll(".bar-fill").forEach((bar) => {
-        bar.style.transition = "none";
-        bar.style.transform = "scaleX(0)";
-      });
-
-      requestAnimationFrame(() => {
-        barList.querySelectorAll(".bar-fill").forEach((bar) => {
-          bar.style.transition = "";
-          bar.style.transform = "";
-        });
-        requestAnimationFrame(() => {
-          barList.classList.add("is-visible");
-        });
-      });
-
-      barList.querySelectorAll("[data-count]").forEach((element) => {
-        element.dataset.animated = "false";
-        animateCount(element);
-      });
-    }
-
-    function renderStaticCharts() {
-      const sorted = [...countries].sort((a, b) => b.nps - a.nps);
-      npsBars.innerHTML = sorted.map((item, index) => barRow(item.name, item.nps, 60, palette[index])).join("");
-      sampleGrid.innerHTML = countries.map((item) => `
-        <div class="sample">
-          <strong data-count="${item.sample}">${item.sample}</strong>
-          <span>${item.name}完卷 / 回收 ${item.returned}</span>
-        </div>
-      `).join("");
-    }
-
-    function renderTabs(activeId) {
-      tabs.innerHTML = countries.map((item) => `
-        <button class="tab" type="button" role="tab" aria-selected="${item.id === activeId}" data-id="${item.id}">
-          ${item.name}
-        </button>
-      `).join("");
-      tabs.querySelectorAll("button").forEach((button) => {
-        button.addEventListener("click", () => renderCountry(button.dataset.id));
-      });
-    }
-
-    function renderCountry(id) {
-      const item = countries.find((country) => country.id === id) || countries[0];
-      renderTabs(item.id);
-      detail.innerHTML = `
-        <h3>${item.name}</h3>
-        <p>${item.user}</p>
-        <div class="split-metrics">
-          <div class="mini-metric"><small>NPS</small><strong data-count="${item.nps}" data-decimals="1">${item.nps}</strong></div>
-          <div class="mini-metric"><small>满意度</small><strong data-count="${item.satisfaction}" data-decimals="2">${item.satisfaction}</strong></div>
-          <div class="mini-metric"><small>安全动机</small><strong data-count="${item.safety}" data-decimals="1" data-suffix="%">${item.safety}%</strong></div>
-        </div>
-        <div class="meta-row">
-          <span class="tag">竞品：${item.competitor}</span>
-          <span class="tag">样本：${item.sample} 完卷</span>
-        </div>
-        <p><strong>品牌定位：</strong>${item.position}</p>
-        <p><strong>体验机会：</strong>${item.opportunities.join(" / ")}</p>
-      `;
-      journeyAwareness.textContent = item.channel;
-      journeyCompare.textContent = item.compare;
-      factorBars.innerHTML = item.factors.map((factor, index) => barRow(factor[0], factor[1], 80, palette[index])).join("");
-      replayDynamicMotion(document.getElementById("country"));
-      replayBars(factorBars);
-    }
-
-    setupObservers();
-    renderStaticCharts();
-    renderCountry("my");
-    registerMotion(document);
+    })();
   </script>
 </body>
 </html>
